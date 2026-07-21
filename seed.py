@@ -15,8 +15,8 @@ def create_admin():
     admin = User(
         first_name='Admin',
         last_name='User',
-        email='admin@example.com',
-        password_hash=generate_password_hash('admin123'),
+        email='admin@trekflow.com',
+        password_hash=generate_password_hash('Admin@123'),
         role='ADMIN'
     )
 
