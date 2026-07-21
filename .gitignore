@@ -1,0 +1,28 @@
+# Python compiled files
+__pycache__/
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment variables and secrets
+.env
+.flaskenv
+instance/
+
+# Databases
+*.db
+*.sqlite
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
