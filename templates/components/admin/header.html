@@ -1,0 +1,17 @@
+<nav class="navbar navbar-expand navbar-light bg-light">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="{{ url_for('admin.dashboard') }}">
+            TrekFlow
+        </a>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <span class="nav-link">
+                        {{ current_user.first_name }} {{ current_user.last_name }}
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
