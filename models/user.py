@@ -1,10 +1,9 @@
-from __future__ import annotations
-
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from enums import UserRole, UserStatus
 from db import db
 
 if TYPE_CHECKING:
@@ -22,16 +21,16 @@ class User(db.Model):
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    role: Mapped[str] = mapped_column(
+    role: Mapped[UserRole] = mapped_column(
         String(20),
         nullable=False,
-        default="TREKKER",
+        default=UserRole.TREKKER,
     )  # ADMIN, STAFF, TREKKER
 
-    status: Mapped[str] = mapped_column(
+    status: Mapped[UserStatus] = mapped_column(
         String(20),
         nullable=False,
-        default="ACTIVE",
+        default=UserStatus.ACTIVE,
     )  # ACTIVE, PENDING, BLACKLISTED
 
     created_at: Mapped[datetime] = mapped_column(
@@ -54,7 +53,7 @@ class User(db.Model):
         uselist=False,
     )
 
-    def __init__(self, first_name: str, last_name: str, email: str, password_hash: str, role: str = "TREKKER", status: str = "ACTIVE"):
+    def __init__(self, first_name: str, last_name: str, email: str, password_hash: str, role: UserRole = UserRole.TREKKER, status: UserStatus = UserStatus.ACTIVE):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email

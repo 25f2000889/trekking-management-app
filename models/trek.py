@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from enums import TrekDifficulty, TrekStatus
 from db import db
 
 if TYPE_CHECKING:
@@ -19,10 +20,10 @@ class Trek(db.Model):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     location: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    difficulty: Mapped[str] = mapped_column(
+    difficulty: Mapped[TrekDifficulty] = mapped_column(
         String(20),
         nullable=False,
-    )  # EASY, MODERATE, HARD
+    )
 
     duration_days: Mapped[int] = mapped_column(Integer, nullable=False)
 
@@ -30,11 +31,11 @@ class Trek(db.Model):
 
     assigned_staff_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
 
-    status: Mapped[str] = mapped_column(
+    status: Mapped[TrekStatus] = mapped_column(
         String(20),
         nullable=False,
-        default="PENDING",
-    )  # PENDING, APPROVED, CANCELLED, OPEN, COMPLETED
+        default=TrekStatus.PENDING,
+    )
 
     start_date: Mapped[date] = mapped_column(nullable=False)
     end_date: Mapped[date] = mapped_column(nullable=False)
@@ -57,14 +58,14 @@ class Trek(db.Model):
         self,
         name: str,
         location: str,
-        difficulty: str,
+        difficulty: TrekDifficulty,
         duration_days: int,
         available_slots: int,
         start_date: date,
         end_date: date,
         description: str | None = None,
         assigned_staff_id: int | None = None,
-        status: str = "PENDING",
+        status: TrekStatus = TrekStatus.PENDING,
     ):
         self.name = name
         self.location = location

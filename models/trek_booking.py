@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from enums import TrekBookingStatus
 from db import db
 
 if TYPE_CHECKING:
@@ -16,12 +17,12 @@ class TrekBooking(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     trek_id: Mapped[int] = mapped_column(ForeignKey("treks.id"), nullable=False)
     booking_date: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
-    status: Mapped[str] = mapped_column(String(20), nullable=False, default='PENDING')  # BOOKED, CANCELLED, COMPLETED
+    status: Mapped[TrekBookingStatus] = mapped_column(String(20), nullable=False, default=TrekBookingStatus.PENDING)
 
     user: Mapped["User"] = relationship("User", back_populates="trek_bookings")
     trek: Mapped["Trek"] = relationship("Trek", back_populates="trek_bookings")
 
-    def __init__(self, user_id: int, trek_id: int, status: str = 'PENDING'):
+    def __init__(self, user_id: int, trek_id: int, status: TrekBookingStatus = TrekBookingStatus.PENDING):
         self.user_id = user_id
         self.trek_id = trek_id
         self.status = status
