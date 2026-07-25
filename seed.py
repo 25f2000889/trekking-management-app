@@ -1,12 +1,13 @@
 from app import create_app
 from db import db
+from enums import UserRole
 from models import *
 from werkzeug.security import generate_password_hash
 
 app = create_app()
 
 def create_admin():
-    admin = User.query.filter_by(role='ADMIN').first()
+    admin = User.query.filter_by(role=UserRole.ADMIN).first()
 
     if admin:
         print("Admin user already exists.")
@@ -17,7 +18,7 @@ def create_admin():
         last_name='User',
         email='admin@trekflow.com',
         password_hash=generate_password_hash('Admin@123'),
-        role='ADMIN'
+        role=UserRole.ADMIN,
     )
 
     db.session.add(admin)
