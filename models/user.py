@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
-from sqlalchemy import String
+from sqlalchemy import String, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from enums import UserRole, UserStatus
@@ -22,13 +22,13 @@ class User(db.Model):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
 
     role: Mapped[UserRole] = mapped_column(
-        String(20),
+        Enum(UserRole),
         nullable=False,
         default=UserRole.TREKKER,
     )  # ADMIN, STAFF, TREKKER
 
     status: Mapped[UserStatus] = mapped_column(
-        String(20),
+        Enum(UserStatus),
         nullable=False,
         default=UserStatus.ACTIVE,
     )  # ACTIVE, PENDING, BLACKLISTED

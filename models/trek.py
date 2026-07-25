@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, date, datetime
 from typing import TYPE_CHECKING
-from sqlalchemy import ForeignKey, Integer, String
+from sqlalchemy import ForeignKey, Integer, String, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from enums import TrekDifficulty, TrekStatus
@@ -21,7 +21,7 @@ class Trek(db.Model):
     location: Mapped[str] = mapped_column(String(255), nullable=False)
 
     difficulty: Mapped[TrekDifficulty] = mapped_column(
-        String(20),
+        Enum(TrekDifficulty),
         nullable=False,
     )
 
@@ -32,7 +32,7 @@ class Trek(db.Model):
     assigned_staff_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
 
     status: Mapped[TrekStatus] = mapped_column(
-        String(20),
+        Enum(TrekStatus),
         nullable=False,
         default=TrekStatus.PENDING,
     )

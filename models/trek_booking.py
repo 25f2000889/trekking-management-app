@@ -1,6 +1,6 @@
 from datetime import datetime, UTC
 from typing import TYPE_CHECKING
-from sqlalchemy import DateTime, ForeignKey, Integer, String
+from sqlalchemy import DateTime, Enum, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from enums import TrekBookingStatus
@@ -17,7 +17,11 @@ class TrekBooking(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     trek_id: Mapped[int] = mapped_column(ForeignKey("treks.id"), nullable=False)
     booking_date: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
-    status: Mapped[TrekBookingStatus] = mapped_column(String(20), nullable=False, default=TrekBookingStatus.PENDING)
+    status: Mapped[TrekBookingStatus] = mapped_column(
+        Enum(TrekBookingStatus),
+        nullable=False,
+        default=TrekBookingStatus.PENDING,
+    )
 
     user: Mapped["User"] = relationship("User", back_populates="trek_bookings")
     trek: Mapped["Trek"] = relationship("Trek", back_populates="trek_bookings")
