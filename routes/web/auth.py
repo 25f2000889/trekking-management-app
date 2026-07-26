@@ -1,10 +1,12 @@
 from flask import Blueprint, session, redirect, render_template, request, url_for
+from decorators import no_auth_required
 from enums import UserRole
 from services import AuthService
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 @auth_bp.route("/login", methods=["GET", "POST"])
+@no_auth_required
 def login():
     if request.method == "POST":
         email = request.form.get("email")
@@ -28,6 +30,7 @@ def login():
     return render_template("auth/login.html")
 
 @auth_bp.route("/register", methods=["GET", "POST"])
+@no_auth_required
 def register():
     if request.method == "POST":
         # Implement registration logic here
