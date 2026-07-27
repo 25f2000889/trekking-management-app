@@ -1,4 +1,4 @@
-from flask import Blueprint, session, redirect, render_template, request, url_for
+from flask import Blueprint, flash, session, redirect, render_template, request, url_for
 from decorators import no_auth_required
 from enums import UserRole
 from services import AuthService
@@ -12,8 +12,21 @@ def login():
         email = request.form.get("email")
         password = request.form.get("password")
 
-        if not email or not password:
-            return "Email and password are required", 400
+        form = {
+            "email": email
+        }
+
+        if not email:
+            flash("Email is required", "danger")
+            session["form"] = form
+            session["errors"] = {"email": "Email is required"}
+            return redirect(url_for("auth.login"))
+
+        if not password:
+            flash("Password is required", "danger")
+            session["form"] = form
+            session["errors"] = {"password": "Password is required"}
+            return redirect(url_for("auth.login"))
 
         user = AuthService.login(email, password)
         if user:
@@ -26,8 +39,13 @@ def login():
 
             return redirect(url_for("trekker.dashboard"))
         else:
-            return "Invalid credentials", 401
-    return render_template("auth/login.html")
+            flash("Invalid email or password", "danger")
+            session["form"] = form
+            return redirect(url_for("auth.login"))
+
+    form = session.pop("form", {})
+    errors = session.pop("errors", {})
+    return render_template("auth/login.html", _form=form, _errors=errors)
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 @no_auth_required
