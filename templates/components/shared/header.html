@@ -1,15 +1,16 @@
 <nav class="navbar navbar-expand navbar-light bg-light">
     <div class="container-fluid px-4">
-        <a class="navbar-brand" href="{{ url_for('admin.dashboard') }}">
+        <a class="navbar-brand" href="{{ url_for(current_user.role.value.lower() + '.dashboard') }}">
             TrekFlow
         </a>
 
         <div class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <span class="nav-link">
+                    <a class="nav-link" href="{{ url_for('shared.profile') }}">
+                        <i class="bi bi-person-circle me-2"></i>
                         {{ current_user.first_name }} {{ current_user.last_name }}
-                    </span>
+                    </a>
                 </li>
             </ul>
         </div>

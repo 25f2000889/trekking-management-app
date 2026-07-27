@@ -1,0 +1,6 @@
+/* SIDEBAR */
+.active {
+    background-color: rgba(var(--bs-primary-rgb), 0.15) !important;
+    color: var(--bs-primary) !important;
+    border-radius: 0.5rem;
+}
