@@ -1,29 +1,29 @@
 import enum
 
 class UserRole(enum.Enum):
-    ADMIN = "ADMIN"
-    STAFF = "STAFF"
-    TREKKER = "TREKKER"
+    ADMIN = "Admin"
+    STAFF = "Staff"
+    TREKKER = "Trekker"
 
 class UserStatus(enum.Enum):
-    ACTIVE = "ACTIVE"
-    PENDING = "PENDING"
-    BLACKLISTED = "BLACKLISTED"
+    ACTIVE = "Active"
+    PENDING = "Pending"
+    BLACKLISTED = "Blacklisted"
 
 class TrekDifficulty(enum.Enum):
-    EASY = "EASY"
-    MODERATE = "MODERATE"
-    HARD = "HARD"
+    EASY = "Easy"
+    MODERATE = "Moderate"
+    HARD = "Hard"
 
 class TrekStatus(enum.Enum):
-    PENDING = "PENDING"
-    APPROVED = "APPROVED"
-    CANCELLED = "CANCELLED"
-    OPEN = "OPEN"
-    COMPLETED = "COMPLETED"
+    PENDING = "Pending"
+    APPROVED = "Approved"
+    CANCELLED = "Cancelled"
+    OPEN = "Open"
+    COMPLETED = "Completed"
 
 class TrekBookingStatus(enum.Enum):
-    PENDING = "PENDING"
-    BOOKED = "BOOKED"
-    CANCELLED = "CANCELLED"
-    COMPLETED = "COMPLETED"
+    PENDING = "Pending"
+    BOOKED = "Booked"
+    CANCELLED = "Cancelled"
+    COMPLETED = "Completed"
