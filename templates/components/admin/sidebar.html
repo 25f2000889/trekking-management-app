@@ -1,27 +1,50 @@
-<aside class="p-4 bg-light" style="width: 200px; height: calc(100vh - 56px);">
-    <div class="d-flex flex-column align-items-start gap-4">
-        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
-            Dashboard
-        </a>
+<aside class="p-3 bg-light" style="width: 200px; height: calc(100vh - 56px);">
+    <div class="d-flex flex-column align-items-start gap-2">
+        <div class="w-100 py-2 px-3 {% if tab == 'dashboard' %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                <i class="bi bi-house-door-fill me-2"></i>
+                Dashboard
+            </a>
+        </div>
 
-        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
-            Treks
-        </a>
+        <div class="w-100 py-2 px-3 {% if tab == 'treks' %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('admin.treks') }}">
+                <i class="bi bi-signpost-split-fill me-2"></i>
+                Treks
+            </a>
+        </div>
 
-        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
-            Staff
-        </a>
+        <div class="w-100 py-2 px-3 {% if tab == 'staff' %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('admin.staff') }}">
+                <i class="bi bi-person-badge-fill me-2"></i>
+                Staff
+            </a>
+        </div>
 
-        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
-            Users
-        </a>
+        <div class="w-100 py-2 px-3 {% if tab == 'users' %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('admin.users') }}">
+                <i class="bi bi-people-fill me-2"></i>
+                Users
+            </a>
+        </div>
 
-        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
-            Bookings
-        </a>
+        <div class="w-100 py-2 px-3 {% if tab == 'bookings' %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('admin.bookings') }}">
+                <i class="bi bi-calendar-check-fill me-2"></i>
+                Bookings
+            </a>
+        </div>
+
+        <div class="w-100 py-2 px-3 {% if tab == 'profile' %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('shared.profile') }}">
+                <i class="bi bi-person-circle me-2"></i>
+                Profile
+            </a>
+        </div>
 
         <form method="POST" action="{{ url_for('auth.logout') }}">
-            <button type="submit" class="nav-link btn btn-link p-0">
+            <button type="submit" class="nav-link btn btn-link py-2 px-3 text-danger">
+                <i class="bi bi-box-arrow-right me-2"></i>
                 Logout
             </button>
         </form>

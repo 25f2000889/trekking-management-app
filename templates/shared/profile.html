@@ -1,0 +1,35 @@
+{% extends current_user.role.value.lower() + "/base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Profile</h1>
+    {% include "components/shared/alerts.html" %}
+    <form method="POST" action="{{ url_for('shared.profile') }}">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control disabled" id="email" name="email" value="{{ current_user.email }}" required readonly disabled>
+        </div>
+        <div class="mb-3">
+            <label for="first_name" class="form-label">First Name</label>
+            <input type="text" class="form-control {% if _errors.get('first_name') %}is-invalid{% endif %}" id="first_name" name="first_name" value="{{ _form.get('first_name', current_user.first_name) }}" required>
+            {% if _errors.get('first_name') %}
+                <div class="invalid-feedback">
+                    {{ _errors.get('first_name') }}
+                </div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="last_name" class="form-label">Last Name</label>
+            <input type="text" class="form-control {% if _errors.get('last_name') %}is-invalid{% endif %}" id="last_name" name="last_name" value="{{ _form.get('last_name', current_user.last_name) }}" required>
+            {% if _errors.get('last_name') %}
+                <div class="invalid-feedback">
+                    {{ _errors.get('last_name') }}
+                </div>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">Update Profile</button>
+    </form>
+</div>
+{% endblock %}
