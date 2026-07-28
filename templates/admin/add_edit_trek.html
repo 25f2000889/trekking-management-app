@@ -1,0 +1,143 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if trek_id %}Edit{% else %}Add{% endif %} Trek{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-3">{% if trek_id %}Edit{% else %}Add{% endif %} Trek</h1>
+    {% include "components/shared/alerts.html" %}
+    <form method="POST" action="{% if trek_id %}{{ url_for('admin.edit_trek', trek_id=trek_id) }}{% else %}{{ url_for('admin.add_trek') }}{% endif %}">
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="name" class="form-label">Trek Name</label>
+                <input type="text" class="form-control {% if _errors.get('name') %}is-invalid{% endif %}" id="name"
+                    name="name" value="{{ _form.get('name', '') }}" required>
+                {% if _errors.get('name') %}
+                <div class="invalid-feedback">
+                    {{ _errors.get('name') }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control {% if _errors.get('location') %}is-invalid{% endif %}"
+                        id="location" name="location" value="{{ _form.get('location', '') }}" required>
+                    {% if _errors.get('location') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('location') }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label for="duration_days" class="form-label">Duration (days)</label>
+                    <input type="number" class="form-control {% if _errors.get('duration_days') %}is-invalid{% endif %}"
+                        id="duration_days" name="duration_days" value="{{ _form.get('duration_days', '') }}" required>
+                    {% if _errors.get('duration_days') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('duration_days') }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label for="difficulty" class="form-label">Difficulty</label>
+                    <select class="form-select {% if _errors.get('difficulty') %}is-invalid{% endif %}" id="difficulty"
+                        name="difficulty" required>
+                        <option value="">Select difficulty</option>
+                        {% for difficulty in enums.TrekDifficulty %}
+                        <option value="{{ difficulty.name }}" {% if _form.get('difficulty')==difficulty.name
+                            %}selected{% endif %}>{{ difficulty.value }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if _errors.get('difficulty') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('difficulty') }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label for="available_slots" class="form-label">Available Slots</label>
+                    <input type="number"
+                        class="form-control {% if _errors.get('available_slots') %}is-invalid{% endif %}"
+                        id="available_slots" name="available_slots" value="{{ _form.get('available_slots', '') }}"
+                        required>
+                    {% if _errors.get('available_slots') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('available_slots') }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="mb-3">
+                    <label for="start_date" class="form-label">Start Date</label>
+                    <input type="date" class="form-control {% if _errors.get('start_date') %}is-invalid{% endif %}"
+                        id="start_date" name="start_date" value="{{ _form.get('start_date', '') }}" required>
+                    {% if _errors.get('start_date') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('start_date') }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label for="end_date" class="form-label">End Date</label>
+                    <input type="date" class="form-control {% if _errors.get('end_date') %}is-invalid{% endif %}"
+                        id="end_date" name="end_date" value="{{ _form.get('end_date', '') }}" required>
+                    {% if _errors.get('end_date') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('end_date') }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label for="assigned_staff_id" class="form-label">Assigned Staff</label>
+                    <select class="form-select {% if _errors.get('assigned_staff_id') %}is-invalid{% endif %}"
+                        id="assigned_staff_id" name="assigned_staff_id">
+                        <option value="">Select Staff</option>
+                        {% if staff_list %}
+                            {% for staff in staff_list %}
+                            <option value="{{ staff.id }}" {% if _form.get('assigned_staff_id')==staff.id %}selected{% endif
+                                %}>{{ staff.name }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    {% if _errors.get('assigned_staff_id') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('assigned_staff_id') }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select {% if _errors.get('status') %}is-invalid{% endif %}" id="status"
+                        name="status">
+                        <option value="">Select Status</option>
+                        {% for status in enums.TrekStatus %}
+                        <option value="{{ status.name }}" {% if _form.get('status')==status.name
+                            %}selected{% endif %}>{{ status.value }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if _errors.get('status') %}
+                    <div class="invalid-feedback">
+                        {{ _errors.get('status') }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-12 mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control {% if _errors.get('description') %}is-invalid{% endif %}" id="description"
+                    name="description" rows="4">{{ _form.get('description', '') or '' }}</textarea>
+                {% if _errors.get('description') %}
+                <div class="invalid-feedback">
+                    {{ _errors.get('description') }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">{% if trek_id %}Update{% else %}Add{% endif %} Trek</button>
+    </form>
+</div>
+{% endblock %}

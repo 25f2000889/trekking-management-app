@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Manage Treks{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-3 align-items-center">
+        <div class="col-12 col-md-6">
+            <h1>Treks</h1>
+        </div>
+        <div class="col-12 col-md-6 text-start text-md-end">
+            <a href="{{ url_for('admin.add_trek') }}" class="btn btn-primary">Add Trek</a>
+        </div>
+    </div>
+    {% include "components/shared/alerts.html" %}
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Location</th>
+                <th scope="col">Duration (Days)</th>
+                <th scope="col">Difficulty</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if treks|length == 0 %}
+            <tr>
+                <td colspan="6" class="text-center">No treks found.</td>
+            </tr>
+            {% endif %}
+            {% for trek in treks %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ trek.name }}</td>
+                <td>{{ trek.location }}</td>
+                <td>{{ trek.duration_days }}</td>
+                <td>{{ trek.difficulty.value }}</td>
+                <td>
+                    <a href="{{ url_for('admin.edit_trek', trek_id=trek.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                    <form
+                        action="{{ url_for('admin.delete_trek', trek_id=trek.id) }}"
+                        method="POST"
+                        style="display:inline;"
+                        onsubmit="return confirm('Are you sure you want to delete this trek?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

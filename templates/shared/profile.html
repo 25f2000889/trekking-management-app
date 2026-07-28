@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container">
-    <h1>Profile</h1>
+    <h1 class="mb-3">Profile</h1>
     {% include "components/shared/alerts.html" %}
     <form method="POST" action="{{ url_for('shared.profile') }}">
         <div class="mb-3">
