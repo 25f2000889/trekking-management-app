@@ -8,6 +8,7 @@ class UserRole(enum.Enum):
 class UserStatus(enum.Enum):
     ACTIVE = "Active"
     PENDING = "Pending"
+    REJECTED = "Rejected"
     BLACKLISTED = "Blacklisted"
 
 class TrekDifficulty(enum.Enum):

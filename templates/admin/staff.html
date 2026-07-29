@@ -1,0 +1,159 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Manage Staff{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="mb-3">
+        <div class="row mb-3 align-items-center">
+            <div class="col-12 col-md-6">
+                <h1>Staff Management</h1>
+            </div>
+            <div class="col-12 col-md-6 text-start text-md-end">
+                <a href="{{ url_for('admin.add_staff') }}" class="btn btn-primary">Add Staff Member</a>
+            </div>
+        </div>
+        <ul class="nav nav-tabs" id="staffRoleTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending"
+                    type="button" role="tab" aria-controls="pending" aria-selected="true">Pending ({{
+                    staff.pending|length }})</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button"
+                    role="tab" aria-controls="active" aria-selected="false">Active ({{ staff.active|length }})</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="blacklisted-tab" data-bs-toggle="tab" data-bs-target="#blacklisted"
+                    type="button" role="tab" aria-controls="blacklisted" aria-selected="false">Blacklisted ({{
+                    staff.blacklisted|length }})</button>
+            </li>
+        </ul>
+    </div>
+    {% include "components/shared/alerts.html" %}
+    <div class="tab-content" id="staffRoleTabContent">
+        <div class="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Phone Number</th>
+                        <th scope="col">Registered On</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if staff.pending|length == 0 %}
+                    <tr>
+                        <td colspan="7" class="text-center">No staff members found.</td>
+                    </tr>
+                    {% endif %}
+                    {% for staff_member in staff.pending %}
+                    <tr>
+                        <th scope="row">{{ staff_member.id }}</th>
+                        <td>{{ staff_member.first_name }} {{ staff_member.last_name }}</td>
+                        <td>{{ staff_member.email }}</td>
+                        <td>{{ staff_member.staff_profile.phone_number }}</td>
+                        <td>{{ staff_member.created_at.strftime('%d %b, %Y %I:%M %p') }}</td>
+                        <td>{{ staff_member.status.value }}</td>
+                        <td>
+                            <form action="{{ url_for('admin.approve_staff', staff_member_id=staff_member.id) }}"
+                                method="POST" style="display:inline;"
+                                onsubmit="return confirm('Are you sure you want to approve this staff member?');">
+                                <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                            </form>
+                            <form action="{{ url_for('admin.reject_staff', staff_member_id=staff_member.id) }}"
+                                method="POST" style="display:inline;"
+                                onsubmit="return confirm('Are you sure you want to reject this staff member?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="active" role="tabpanel" aria-labelledby="active-tab">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Phone Number</th>
+                        <th scope="col">Registered On</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if staff.active|length == 0 %}
+                    <tr>
+                        <td colspan="7" class="text-center">No staff members found.</td>
+                    </tr>
+                    {% endif %}
+                    {% for staff_member in staff.active %}
+                    <tr>
+                        <th scope="row">{{ staff_member.id }}</th>
+                        <td>{{ staff_member.first_name }} {{ staff_member.last_name }}</td>
+                        <td>{{ staff_member.email }}</td>
+                        <td>{{ staff_member.staff_profile.phone_number }}</td>
+                        <td>{{ staff_member.created_at.strftime('%d %b, %Y %I:%M %p') }}</td>
+                        <td>{{ staff_member.status.value }}</td>
+                        <td>
+                            <form action="{{ url_for('admin.blacklist_staff', staff_member_id=staff_member.id) }}"
+                                method="POST" style="display:inline;"
+                                onsubmit="return confirm('Are you sure you want to blacklist this staff member?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Blacklist</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="blacklisted" role="tabpanel" aria-labelledby="blacklisted-tab">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Phone Number</th>
+                        <th scope="col">Registered On</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if staff.blacklisted|length == 0 %}
+                    <tr>
+                        <td colspan="7" class="text-center">No staff members found.</td>
+                    </tr>
+                    {% endif %}
+                    {% for staff_member in staff.blacklisted %}
+                    <tr>
+                        <th scope="row">{{ staff_member.id }}</th>
+                        <td>{{ staff_member.first_name }} {{ staff_member.last_name }}</td>
+                        <td>{{ staff_member.email }}</td>
+                        <td>{{ staff_member.staff_profile.phone_number }}</td>
+                        <td>{{ staff_member.created_at.strftime('%d %b, %Y %I:%M %p') }}</td>
+                        <td>{{ staff_member.status.value }}</td>
+                        <td>
+                            <form action="{{ url_for('admin.approve_staff', staff_member_id=staff_member.id) }}"
+                                method="POST" style="display:inline;"
+                                onsubmit="return confirm('Are you sure you want to restore this staff member?');">
+                                <button type="submit" class="btn btn-sm btn-success">Restore</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

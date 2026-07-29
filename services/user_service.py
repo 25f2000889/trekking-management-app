@@ -1,17 +1,68 @@
-from models import User
+from enums import UserRole, UserStatus
+from models import User, StaffProfile
 from db import db
+from werkzeug.security import generate_password_hash
 
 from typing import Literal
 
-def update_user(user_id, first_name=None, last_name=None) -> Literal[True] | Exception:
+def get_user_by_role(role: UserRole) -> list[User]:
+    return User.query.filter_by(role=role).all()
+
+def add_user(**user_data) -> User | Exception:
+    if "email" in user_data:
+        existing_user = User.query.filter_by(email=user_data["email"]).first()
+        if existing_user:
+            return Exception("User with this email already exists")
+
+    if "password" in user_data:
+        user_data["password_hash"] = generate_password_hash(user_data.pop("password"))
+        del user_data["password"]
+
+    user = User(**user_data)
+    db.session.add(user)
+
+    try:
+        db.session.commit()
+        return user
+    except Exception as e:
+        db.session.rollback()
+        return e
+
+def add_staff_member(**staff_data) -> User | Exception:
+    staff_member = User(
+        first_name=staff_data.get("first_name", ""),
+        last_name=staff_data.get("last_name", ""),
+        email=staff_data.get("email", ""),
+        password_hash=generate_password_hash(staff_data.get("password", "")),
+        role=UserRole.STAFF,
+        status=staff_data.get("status", UserStatus.PENDING)
+    )
+    db.session.add(staff_member)
+    db.session.flush()
+
+    staff_profile = StaffProfile(
+        user_id=staff_member.id,
+        experience=staff_data.get("experience", ""),
+        phone_number=staff_data.get("phone_number", ""),
+        address=staff_data.get("address", "")
+    )
+    db.session.add(staff_profile)
+
+    try:
+        db.session.commit()
+        return staff_member
+    except Exception as e:
+        db.session.rollback()
+        return e
+
+def update_user(user_id, **user_data) -> Literal[True] | Exception:
     user = User.query.get(user_id)
     if not user:
         return Exception("User not found")
 
-    if first_name:
-        user.first_name = first_name
-    if last_name:
-        user.last_name = last_name
+    for key, value in user_data.items():
+        if hasattr(user, key):
+            setattr(user, key, value)
 
     try:
         db.session.commit()

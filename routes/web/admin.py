@@ -1,10 +1,11 @@
 from flask import Blueprint, redirect, render_template, request, url_for, session, flash
 
 from decorators import auth_required, roles_required
+from models.user import User
 from validation import ValidationError, optional, require, require_int, optional_int, require_enum, optional_enum, require_date
 from utils import convert_enum_to_name_in_dict
-from enums import TrekDifficulty, TrekStatus
-from services import TrekService
+from enums import TrekDifficulty, TrekStatus, UserRole, UserStatus
+from services import TrekService, UserService
 from models import Trek
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -145,15 +146,103 @@ def delete_trek(trek_id):
 
     return redirect(url_for("admin.treks"))
 
-@admin_bp.route("/staff", methods=["GET", "POST"])
+@admin_bp.route("/staff", methods=["GET"])
 @auth_required
 @roles_required("ADMIN")
 def staff():
+    staff = UserService.get_user_by_role(UserRole.STAFF)
+
+    pending = [s for s in staff if s.status == UserStatus.PENDING]
+    active = [s for s in staff if s.status == UserStatus.ACTIVE]
+    blacklisted = [s for s in staff if s.status == UserStatus.BLACKLISTED]
+
+    return render_template("admin/staff.html", tab="staff", staff={
+        "pending": pending,
+        "active": active,
+        "blacklisted": blacklisted
+    })
+
+@admin_bp.route("/add_staff", methods=["GET", "POST"])
+@auth_required
+@roles_required("ADMIN")
+def add_staff():
     if request.method == "POST":
-        # Implement logic to create a new staff member
-        pass
-    # Implement logic to fetch and display staff members
-    return render_template("admin/staff.html", tab="staff")
+        try:
+            first_name = require(request.form, "first_name", "First Name")
+            last_name = require(request.form, "last_name", "Last Name")
+            email = require(request.form, "email", "Email")
+            password = require(request.form, "password", "Password")
+            experience = require(request.form, "experience", "Experience")
+            phone_number = require(request.form, "phone_number", "Phone Number")
+            address = require(request.form, "address", "Address")
+        except ValidationError as ve:
+            flash(ve.message, "danger")
+            session["form"] = dict(request.form)
+            session["errors"] = {ve.field: ve.message}
+            return redirect(url_for("admin.add_staff"))
+
+        result = UserService.add_staff_member(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            password=password,
+            experience=experience,
+            phone_number=phone_number,
+            address=address,
+            role=UserRole.STAFF,
+            status=UserStatus.ACTIVE
+        )
+
+        if isinstance(result, User):
+            flash("Staff member created successfully", "success")
+            return redirect(url_for("admin.staff"))
+        else:
+            flash("Error: " + str(result), "danger")
+            return redirect(url_for("admin.add_staff"))
+
+    form = session.pop("form", {})
+    errors = session.pop("errors", {})
+
+    return render_template("admin/add_staff.html", tab="staff", _form=form, _errors=errors)
+
+@admin_bp.route("/staff/approve/<int:staff_member_id>", methods=["POST"])
+@auth_required
+@roles_required("ADMIN")
+def approve_staff(staff_member_id):
+    result = UserService.update_user(staff_member_id, status=UserStatus.ACTIVE)
+
+    if result is True:
+        flash('Staff member approved successfully', 'success')
+    else:
+        flash('Error: ' + str(result), 'danger')
+
+    return redirect(url_for("admin.staff"))
+
+@admin_bp.route("/staff/reject/<int:staff_member_id>", methods=["POST"])
+@auth_required
+@roles_required("ADMIN")
+def reject_staff(staff_member_id):
+    result = UserService.update_user(staff_member_id, status=UserStatus.REJECTED)
+
+    if result is True:
+        flash('Staff member rejected successfully', 'success')
+    else:
+        flash('Error: ' + str(result), 'danger')
+
+    return redirect(url_for("admin.staff"))
+
+@admin_bp.route("/staff/blacklist/<int:staff_member_id>", methods=["POST"])
+@auth_required
+@roles_required("ADMIN")
+def blacklist_staff(staff_member_id):
+    result = UserService.update_user(staff_member_id, status=UserStatus.BLACKLISTED)
+
+    if result is True:
+        flash('Staff member blacklisted successfully', 'success')
+    else:
+        flash('Error: ' + str(result), 'danger')
+
+    return redirect(url_for("admin.staff"))
 
 
 @admin_bp.route("/users", methods=["GET", "POST"])
