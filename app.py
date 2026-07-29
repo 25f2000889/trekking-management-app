@@ -6,6 +6,7 @@ from db import db
 from models.user import User
 from routes.web.auth import auth_bp
 from routes.web.admin import admin_bp
+from routes.web.staff import staff_bp
 from routes.web.shared import shared_bp
 
 
@@ -34,6 +35,7 @@ def create_app():
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(staff_bp)
     app.register_blueprint(shared_bp)
 
     with app.app_context():

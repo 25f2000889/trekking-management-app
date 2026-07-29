@@ -1,0 +1,12 @@
+{% extends "staff/base.html" %}
+
+{% block title %}Staff Dashboard{% endblock %}
+
+{% block content %}
+{% if current_user.status == enums.UserStatus.PENDING %}
+    <div class="alert alert-warning" role="alert">
+        Your account is pending approval. Please wait for the administrator to approve your account before you can access the staff dashboard.
+    </div>
+{% else %}
+{% endif %}
+{% endblock %}
