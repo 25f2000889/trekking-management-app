@@ -71,7 +71,9 @@ def add_trek():
     form = session.pop("form", {})
     errors = session.pop("errors", {})
 
-    return render_template("admin/add_edit_trek.html", tab="treks", _form=form, _errors=errors)
+    staff_list = UserService.get_user_by_role(UserRole.STAFF)
+
+    return render_template("admin/add_edit_trek.html", tab="treks", _form=form, _errors=errors, staff_list=staff_list)
 
 @admin_bp.route("/treks/edit/<int:trek_id>", methods=["GET", "POST"])
 @auth_required
@@ -124,8 +126,10 @@ def edit_trek(trek_id: int):
 
     form = convert_enum_to_name_in_dict(session.pop("form", trek.__dict__))
     errors = session.pop("errors", {})
+
+    staff_list = UserService.get_user_by_role(UserRole.STAFF)
     
-    return render_template("admin/add_edit_trek.html", tab="treks", trek_id=trek_id, _form=form, _errors=errors)
+    return render_template("admin/add_edit_trek.html", tab="treks", trek_id=trek_id, _form=form, _errors=errors, staff_list=staff_list)
 
 @admin_bp.route("/treks/delete/<int:trek_id>", methods=["POST"])
 @auth_required
@@ -161,49 +165,6 @@ def staff():
         "active": active,
         "blacklisted": blacklisted
     })
-
-@admin_bp.route("/add_staff", methods=["GET", "POST"])
-@auth_required
-@roles_required("ADMIN")
-def add_staff():
-    if request.method == "POST":
-        try:
-            first_name = require(request.form, "first_name", "First Name")
-            last_name = require(request.form, "last_name", "Last Name")
-            email = require(request.form, "email", "Email")
-            password = require(request.form, "password", "Password")
-            experience = require(request.form, "experience", "Experience")
-            phone_number = require(request.form, "phone_number", "Phone Number")
-            address = require(request.form, "address", "Address")
-        except ValidationError as ve:
-            flash(ve.message, "danger")
-            session["form"] = dict(request.form)
-            session["errors"] = {ve.field: ve.message}
-            return redirect(url_for("admin.add_staff"))
-
-        result = UserService.add_staff_member(
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            password=password,
-            experience=experience,
-            phone_number=phone_number,
-            address=address,
-            role=UserRole.STAFF,
-            status=UserStatus.ACTIVE
-        )
-
-        if isinstance(result, User):
-            flash("Staff member created successfully", "success")
-            return redirect(url_for("admin.staff"))
-        else:
-            flash("Error: " + str(result), "danger")
-            return redirect(url_for("admin.add_staff"))
-
-    form = session.pop("form", {})
-    errors = session.pop("errors", {})
-
-    return render_template("admin/add_staff.html", tab="staff", _form=form, _errors=errors)
 
 @admin_bp.route("/staff/approve/<int:staff_member_id>", methods=["POST"])
 @auth_required

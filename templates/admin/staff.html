@@ -5,14 +5,7 @@
 {% block content %}
 <div class="container">
     <div class="mb-3">
-        <div class="row mb-3 align-items-center">
-            <div class="col-12 col-md-6">
-                <h1>Staff Management</h1>
-            </div>
-            <div class="col-12 col-md-6 text-start text-md-end">
-                <a href="{{ url_for('admin.add_staff') }}" class="btn btn-primary">Add Staff Member</a>
-            </div>
-        </div>
+        <h1 class="mb-3">Staff Management</h1>
         <ul class="nav nav-tabs" id="staffRoleTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending"
