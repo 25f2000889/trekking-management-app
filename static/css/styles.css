@@ -1,6 +1,10 @@
 /* SIDEBAR */
-.active {
+.sidebar .active {
     background-color: rgba(var(--bs-primary-rgb), 0.15) !important;
     color: var(--bs-primary) !important;
     border-radius: 0.5rem;
+}
+
+.sidebar .nav-link.primary:hover {
+    color: var(--bs-primary) !important;
 }

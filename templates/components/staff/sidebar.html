@@ -1,7 +1,7 @@
-<aside class="p-3 bg-light" style="width: 200px; height: calc(100vh - 56px);">
+<aside class="p-3 bg-light sidebar" style="width: 200px; height: calc(100vh - 56px);">
     <div class="d-flex flex-column align-items-start gap-2">
         <div class="w-100 py-2 px-3 {% if tab == 'dashboard' %}active{% endif %}">
-            <a class="nav-link" href="{{ url_for('staff.dashboard') }}">
+            <a class="nav-link primary" href="{{ url_for('staff.dashboard') }}">
                 <i class="bi bi-house-door-fill me-2"></i>
                 Dashboard
             </a>
@@ -9,7 +9,7 @@
 
         {% if current_user.status == enums.UserStatus.ACTIVE %}
             <div class="w-100 py-2 px-3 {% if tab == 'treks' %}active{% endif %}">
-                <a class="nav-link" href="{{ url_for('staff.treks') }}">
+                <a class="nav-link primary" href="{{ url_for('staff.treks') }}">
                     <i class="bi bi-signpost-split-fill me-2"></i>
                     My Treks
                 </a>
@@ -17,7 +17,7 @@
         {% endif %}
 
         <div class="w-100 py-2 px-3 {% if tab == 'profile' %}active{% endif %}">
-            <a class="nav-link" href="{{ url_for('shared.profile') }}">
+            <a class="nav-link primary" href="{{ url_for('shared.profile') }}">
                 <i class="bi bi-person-circle me-2"></i>
                 Profile
             </a>
