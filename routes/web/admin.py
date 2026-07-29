@@ -22,8 +22,14 @@ def dashboard():
 @auth_required
 @roles_required("ADMIN")
 def treks():
-    treks = TrekService.get_all_treks()
-    return render_template("admin/treks.html", tab="treks", treks=treks)
+    search_term = request.args.get("search", "")
+    if search_term:
+        search_term = search_term.strip()
+        treks = TrekService.search_treks_by_name_or_location(search_term)
+    else:
+        treks = TrekService.get_all_treks()
+        
+    return render_template("admin/treks.html", tab="treks", treks=treks, _form={"search": request.args.get("search", "")})
 
 
 @admin_bp.route("/treks/add", methods=["GET", "POST"])
@@ -154,7 +160,12 @@ def delete_trek(trek_id):
 @auth_required
 @roles_required("ADMIN")
 def staff():
-    staff = UserService.get_user_by_role(UserRole.STAFF)
+    search_term = request.args.get("search", "")
+    if search_term:
+        search_term = search_term.strip()
+        staff = UserService.search_users_by_id_or_name_or_email(search_term, role=UserRole.STAFF)
+    else:
+        staff = UserService.get_user_by_role(UserRole.STAFF)
 
     pending = [s for s in staff if s.status == UserStatus.PENDING]
     active = [s for s in staff if s.status == UserStatus.ACTIVE]
@@ -163,8 +174,8 @@ def staff():
     return render_template("admin/staff.html", tab="staff", staff={
         "pending": pending,
         "active": active,
-        "blacklisted": blacklisted
-    })
+        "blacklisted": blacklisted,
+    }, _form={"search": request.args.get("search", "")})
 
 @admin_bp.route("/staff/approve/<int:staff_member_id>", methods=["POST"])
 @auth_required

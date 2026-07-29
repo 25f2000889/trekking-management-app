@@ -14,3 +14,6 @@ def convert_enum_to_name(value, enum_class):
         return enum_class(value).name
     except ValueError:
         raise ValidationError(None, f"Invalid value for {enum_class.__name__}: {value}")
+
+def escape_search_input(search_input: str) -> str:
+    return search_input.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")

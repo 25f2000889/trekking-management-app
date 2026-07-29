@@ -1,12 +1,34 @@
+from sqlalchemy import or_, cast, String
+
 from enums import UserRole, UserStatus
 from models import User, StaffProfile
 from db import db
+from utils import escape_search_input
 from werkzeug.security import generate_password_hash
 
 from typing import Literal
 
 def get_user_by_role(role: UserRole) -> list[User]:
     return User.query.filter_by(role=role).all()
+
+def search_users_by_id_or_name_or_email(search_term: str, role: UserRole | None = None) -> list[User]:
+    search_term = escape_search_input(search_term.strip())
+    if not search_term:
+        return []
+
+    query = User.query.filter(
+        or_(
+            cast(User.id, String).like(f"{search_term}%", escape="\\"),
+            User.first_name.ilike(f"{search_term}%", escape="\\"),
+            User.last_name.ilike(f"{search_term}%", escape="\\"),
+            User.email.ilike(f"{search_term}%", escape="\\"),
+        )
+    )
+
+    if role is not None:
+        query = query.filter_by(role=role)
+
+    return query.order_by(User.id).all()
 
 def add_user(**user_data) -> User | Exception:
     if "email" in user_data:

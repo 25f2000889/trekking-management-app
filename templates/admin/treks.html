@@ -12,6 +12,11 @@
             <a href="{{ url_for('admin.add_trek') }}" class="btn btn-primary">Add Trek</a>
         </div>
     </div>
+    <form class="d-flex mb-3" method="GET" action="{{ url_for('admin.treks') }}">
+        <input class="form-control me-2" type="search" placeholder="Search by name or location" aria-label="Search"
+            name="search" value="{{ _form.get('search', '') }}">
+        <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
+    </form>
     {% include "components/shared/alerts.html" %}
     <table class="table table-bordered table-striped">
         <thead>
@@ -41,9 +46,7 @@
                     <a href="{{ url_for('admin.edit_trek', trek_id=trek.id) }}" class="btn btn-sm btn-warning">
                         <i class="bi bi-pencil-square me-1"></i> Edit
                     </a>
-                    <form
-                        action="{{ url_for('admin.delete_trek', trek_id=trek.id) }}"
-                        method="POST"
+                    <form action="{{ url_for('admin.delete_trek', trek_id=trek.id) }}" method="POST"
                         style="display:inline;"
                         onsubmit="return confirm('Are you sure you want to delete this trek?');">
                         <button type="submit" class="btn btn-sm btn-danger">

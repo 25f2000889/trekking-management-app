@@ -1,13 +1,27 @@
 from typing import Literal
 
 from models import Trek
+from sqlalchemy import or_
 from db import db
+from utils import escape_search_input
 
 def get_all_treks():
     return Trek.query.all()
 
 def get_trek_by_id(trek_id: int) -> Trek | None:
     return Trek.query.get(trek_id)
+
+def search_treks_by_name_or_location(search_term: str) -> list[Trek]:
+    search_term = escape_search_input(search_term.strip())
+    if not search_term:
+        return []
+
+    return Trek.query.filter(
+        or_(
+            Trek.name.ilike(f"{search_term}%", escape="\\"),
+            Trek.location.ilike(f"{search_term}%", escape="\\"),
+        )
+    ).order_by(Trek.id).all()
 
 def create_trek(**trek_data) -> Trek | Exception:
     trek = Trek(**trek_data)
