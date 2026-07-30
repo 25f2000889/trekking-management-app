@@ -29,6 +29,38 @@
                 </div>
             {% endif %}
         </div>
+
+        {% if current_user.role.value.lower() == 'staff' %}
+        <div class="mb-3">
+            <label for="experience" class="form-label">Experience</label>
+            <input type="text" class="form-control {% if _errors.get('experience') %}is-invalid{% endif %}" id="experience" name="experience" value="{{ _form.get('experience', current_user.staff_profile.experience) }}" required>
+            {% if _errors.get('experience') %}
+                <div class="invalid-feedback">
+                    {{ _errors.get('experience') }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="phone_number" class="form-label">Phone Number</label>
+            <input type="text" class="form-control {% if _errors.get('phone_number') %}is-invalid{% endif %}" id="phone_number" name="phone_number" value="{{ _form.get('phone_number', current_user.staff_profile.phone_number) }}" required>
+            {% if _errors.get('phone_number') %}
+                <div class="invalid-feedback">
+                    {{ _errors.get('phone_number') }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="address" class="form-label">Address</label>
+            <textarea class="form-control {% if _errors.get('address') %}is-invalid{% endif %}" id="address" name="address" rows="3" required>{{ _form.get('address', current_user.staff_profile.address) }}</textarea>
+            {% if _errors.get('address') %}
+                <div class="invalid-feedback">
+                    {{ _errors.get('address') }}
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
         <button type="submit" class="btn btn-primary">Update Profile</button>
     </form>
 </div>

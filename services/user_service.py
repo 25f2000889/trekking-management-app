@@ -92,3 +92,25 @@ def update_user(user_id, **user_data) -> Literal[True] | Exception:
     except Exception as e:
         db.session.rollback()
         return e
+
+def update_user_with_staff_profile(user_id, **user_data) -> Literal[True] | Exception:
+    user = User.query.get(user_id)
+    if not user:
+        return Exception("User not found")
+
+    for key, value in user_data.items():
+        if hasattr(user, key):
+            setattr(user, key, value)
+
+    staff_profile = StaffProfile.query.filter_by(user_id=user_id).first()
+    if staff_profile:
+        for key in ["experience", "phone_number", "address"]:
+            if key in user_data:
+                setattr(staff_profile, key, user_data[key])
+
+    try:
+        db.session.commit()
+        return True
+    except Exception as e:
+        db.session.rollback()
+        return e
