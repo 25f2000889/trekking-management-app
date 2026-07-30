@@ -1,5 +1,6 @@
 from typing import Literal
 
+from enums import TrekStatus
 from models import Trek
 from sqlalchemy import or_
 from db import db
@@ -8,8 +9,17 @@ from utils import escape_search_input
 def get_all_treks():
     return Trek.query.all()
 
-def get_trek_by_id(trek_id: int) -> Trek | None:
-    return Trek.query.get(trek_id)
+def get_assigned_treks_for_staff(staff_id: int, only_statuses: list[TrekStatus] | None = None) -> list[Trek]:
+    query = db.session.query(Trek).filter(Trek.assigned_staff_id == staff_id)
+    if only_statuses:
+        query = query.filter(Trek.status.in_(only_statuses))
+    return query.all()
+
+def get_trek_by_id(trek_id: int, only_statuses: list[TrekStatus] | None = None) -> Trek | None:
+    query = db.session.query(Trek).filter(Trek.id == trek_id)
+    if only_statuses:
+        query = query.filter(Trek.status.in_(only_statuses))
+    return query.first()
 
 def search_treks_by_name_or_location(search_term: str) -> list[Trek]:
     search_term = escape_search_input(search_term.strip())

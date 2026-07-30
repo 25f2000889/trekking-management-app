@@ -1,0 +1,45 @@
+{% extends "staff/base.html" %}
+
+{% block title %}My Treks{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-3">My Assigned Treks</h1>
+    {% include "components/shared/alerts.html" %}
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Location</th>
+                <th scope="col">Participants</th>
+                <th scope="col">Available Slots</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if treks|length == 0 %}
+            <tr>
+                <td colspan="7" class="text-center">No treks found.</td>
+            </tr>
+            {% endif %}
+            {% for trek in treks %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ trek.name }}</td>
+                <td>{{ trek.location }}</td>
+                <td>{{ active_bookings[trek.id] }}</td>
+                <td>{{ trek.available_slots }}</td>
+                <td>{{ trek.status.value }}</td>
+                <td>
+                    <a href="{{ url_for('staff.trek_details', trek_id=trek.id) }}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-gear me-1"></i> Manage
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

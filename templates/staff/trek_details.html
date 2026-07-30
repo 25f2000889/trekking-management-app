@@ -1,0 +1,103 @@
+{% extends "staff/base.html" %}
+
+{% block title %}Manage Trek{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-3">{{ trek.name }}</h1>
+    {% include "components/shared/alerts.html" %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h4 class="card-title mb-3">Trek Details</h4>
+            <div class="w-100 row mb-3">
+                <div class="col-12 col-md-6">
+                    <strong>Location:</strong> {{ trek.location }}
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="row w-100">
+                        <div class="d-flex col-6 align-self-center justify-content-end"><strong>Duration:</strong></div>
+                        <div class="col-6">{{ trek.duration_days }} days</div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-100 row mb-3">
+                <div class="col-12 col-md-6 align-self-center">
+                    <strong>Start Date:</strong> {{ trek.start_date.strftime('%d %b, %Y') }}
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="row w-100">
+                        <div class="d-flex col-6 pt-2 justify-content-end"><strong>Available Slots:</strong></div>
+                        <div class="col-6">
+                            <form id="updateSlotsForm" method="POST" action="{{ url_for('staff.trek_details', trek_id=trek.id) }}">
+                                <input type="number" id="availableSlotsInput" name="available_slots" class="form-control {% if _errors.get('available_slots') %}is-invalid{% endif %}" value="{{ _form.get('available_slots', trek.available_slots) }}" min="0">
+                                {% if _errors.get('available_slots') %}
+                                    <div class="invalid-feedback">{{ _errors.get('available_slots') }}</div>
+                                {% endif %}
+                                <button type="submit" class="btn btn-sm btn-primary mt-2" id="updateSlotsBtn">Update Slots</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-100 row">
+                <div class="col-12 col-md-6">
+                    <strong>End Date:</strong> {{ trek.end_date.strftime('%d %b, %Y') }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h4 class="card-title mb-3">Trek Description</h4>
+            <p class="card-text">{{ trek.description }}</p>
+        </div>
+    </div>
+
+    <h4 class="mb-3">Participants ({{ active_bookings|length }})</h4>
+    <table class="table table-striped table-bordered card-text mb-3">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Booked On</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if active_bookings|length == 0 %}
+            <tr>
+                <td colspan="4" class="text-center">No participants found.</td>
+            </tr>
+            {% endif %}
+            {% for booking in active_bookings %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
+                <td>{{ booking.user.email }}</td>
+                <td>{{ booking.booking_date.strftime('%d %b, %Y') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="row">
+        <div class="col-12 col-md-6">
+            {% if trek.status in [enums.TrekStatus.APPROVED, enums.TrekStatus.CANCELLED] %}
+                <form method="POST" class="d-inline me-3" action="{{ url_for('staff.start_trek', trek_id=trek.id) }}" onsubmit="return confirm('Are you sure you want to mark this trek as started?');">
+                    <button type="submit" class="btn btn-outline-primary">Mark as Started</button>
+                </form>
+                {% if trek.status == enums.TrekStatus.APPROVED %}
+                <form method="POST" class="d-inline me-3" action="{{ url_for('staff.cancel_trek', trek_id=trek.id) }}" onsubmit="return confirm('Are you sure you want to mark this trek as cancelled?');">
+                    <button type="submit" class="btn btn-outline-danger">Mark as Cancelled</button>
+                </form>
+                {% endif %}
+            {% elif trek.status == enums.TrekStatus.STARTED %}
+                <form method="POST" class="d-inline" action="{{ url_for('staff.complete_trek', trek_id=trek.id) }}" onsubmit="return confirm('Are you sure you want to mark this trek as completed?');">
+                    <button type="submit" class="btn btn-outline-success">Mark as Completed</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
