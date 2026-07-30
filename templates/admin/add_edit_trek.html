@@ -99,7 +99,7 @@
                         {% if staff_list %}
                             {% for staff in staff_list %}
                             <option value="{{ staff.id }}" {% if _form.get('assigned_staff_id')==staff.id %}selected{% endif
-                                %}>{{ staff.name }}</option>
+                                %}>{{ staff.first_name }} {{ staff.last_name }}</option>
                             {% endfor %}
                         {% endif %}
                     </select>
