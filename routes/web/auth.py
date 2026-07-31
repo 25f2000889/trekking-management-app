@@ -92,7 +92,7 @@ def register():
     errors = session.pop("errors", {})
     return render_template("auth/register.html", _form=form, _errors=errors)
 
-@auth_bp.route("/logout", methods=["POST"])
+@auth_bp.post("/logout")
 @auth_required
 def logout():
     session.clear()

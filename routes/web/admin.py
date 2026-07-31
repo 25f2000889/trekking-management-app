@@ -9,7 +9,7 @@ from models import Trek
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
-@admin_bp.route("/dashboard", methods=["GET"])
+@admin_bp.get("/dashboard")
 @auth_required
 @roles_required("ADMIN")
 def dashboard():
@@ -17,7 +17,7 @@ def dashboard():
     return render_template("admin/dashboard.html", tab="dashboard")
 
 
-@admin_bp.route("/treks", methods=["GET"])
+@admin_bp.get("/treks")
 @auth_required
 @roles_required("ADMIN")
 def treks():
@@ -136,7 +136,7 @@ def edit_trek(trek_id: int):
     
     return render_template("admin/add_edit_trek.html", tab="treks", trek_id=trek_id, _form=form, _errors=errors, staff_list=staff_list)
 
-@admin_bp.route("/treks/delete/<int:trek_id>", methods=["POST"])
+@admin_bp.post("/treks/delete/<int:trek_id>")
 @auth_required
 @roles_required("ADMIN")
 def delete_trek(trek_id):
@@ -155,7 +155,7 @@ def delete_trek(trek_id):
 
     return redirect(url_for("admin.treks"))
 
-@admin_bp.route("/staff", methods=["GET"])
+@admin_bp.get("/staff")
 @auth_required
 @roles_required("ADMIN")
 def staff():
@@ -176,7 +176,7 @@ def staff():
         "blacklisted": blacklisted,
     }, _form={"search": request.args.get("search", "")})
 
-@admin_bp.route("/staff/approve/<int:staff_member_id>", methods=["POST"])
+@admin_bp.post("/staff/approve/<int:staff_member_id>")
 @auth_required
 @roles_required("ADMIN")
 def approve_staff(staff_member_id):
@@ -189,7 +189,7 @@ def approve_staff(staff_member_id):
 
     return redirect(url_for("admin.staff"))
 
-@admin_bp.route("/staff/reject/<int:staff_member_id>", methods=["POST"])
+@admin_bp.post("/staff/reject/<int:staff_member_id>")
 @auth_required
 @roles_required("ADMIN")
 def reject_staff(staff_member_id):
@@ -202,7 +202,7 @@ def reject_staff(staff_member_id):
 
     return redirect(url_for("admin.staff"))
 
-@admin_bp.route("/staff/blacklist/<int:staff_member_id>", methods=["POST"])
+@admin_bp.post("/staff/blacklist/<int:staff_member_id>")
 @auth_required
 @roles_required("ADMIN")
 def blacklist_staff(staff_member_id):
@@ -216,7 +216,7 @@ def blacklist_staff(staff_member_id):
     return redirect(url_for("admin.staff"))
 
 
-@admin_bp.route("/trekkers", methods=["GET"])
+@admin_bp.get("/trekkers")
 @auth_required
 @roles_required("ADMIN")
 def trekkers():
@@ -235,7 +235,7 @@ def trekkers():
         "blacklisted": blacklisted,
     })
 
-@admin_bp.route("/trekkers/blacklist/<int:trekker_id>", methods=["POST"])
+@admin_bp.post("/trekkers/blacklist/<int:trekker_id>")
 @auth_required
 @roles_required("ADMIN")
 def blacklist_trekker(trekker_id):
@@ -248,7 +248,7 @@ def blacklist_trekker(trekker_id):
 
     return redirect(url_for("admin.trekkers"))
 
-@admin_bp.route("/trekkers/activate/<int:trekker_id>", methods=["POST"])
+@admin_bp.post("/trekkers/activate/<int:trekker_id>")
 @auth_required
 @roles_required("ADMIN")
 def activate_trekker(trekker_id):

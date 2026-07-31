@@ -6,13 +6,13 @@ from validation import ValidationError, require_int
 
 staff_bp = Blueprint("staff", __name__, url_prefix="/staff")
 
-@staff_bp.route("/dashboard", methods=["GET"])
+@staff_bp.get("/dashboard")
 @auth_required
 @roles_required("STAFF")
 def dashboard():
     return render_template("staff/dashboard.html", tab="dashboard")
 
-@staff_bp.route("/treks", methods=["GET"])
+@staff_bp.get("/treks")
 @auth_required
 @roles_required("STAFF")
 def treks():
@@ -65,7 +65,7 @@ def trek_details(trek_id: int):
 
     return render_template("staff/trek_details.html", tab="treks", trek=trek, active_bookings=active_bookings, _form=form, _errors=errors)
 
-@staff_bp.route("/treks/<int:trek_id>/start", methods=["POST"])
+@staff_bp.post("/treks/<int:trek_id>/start")
 @auth_required
 @roles_required("STAFF")
 def start_trek(trek_id: int):
@@ -84,7 +84,7 @@ def start_trek(trek_id: int):
     flash("Trek marked as started successfully", "success")
     return redirect(url_for("staff.trek_details", trek_id=trek_id))
 
-@staff_bp.route("/treks/<int:trek_id>/cancel", methods=["POST"])
+@staff_bp.post("/treks/<int:trek_id>/cancel")
 @auth_required
 @roles_required("STAFF")
 def cancel_trek(trek_id: int):
@@ -103,7 +103,7 @@ def cancel_trek(trek_id: int):
     flash("Trek marked as cancelled successfully", "success")
     return redirect(url_for("staff.treks"))
 
-@staff_bp.route("/treks/<int:trek_id>/complete", methods=["POST"])
+@staff_bp.post("/treks/<int:trek_id>/complete")
 @auth_required
 @roles_required("STAFF")
 def complete_trek(trek_id: int):
