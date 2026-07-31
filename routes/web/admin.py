@@ -1,7 +1,6 @@
 from flask import Blueprint, redirect, render_template, request, url_for, session, flash
 
 from decorators import auth_required, roles_required
-from models.user import User
 from validation import ValidationError, optional, require, require_int, optional_int, require_enum, optional_enum, require_date
 from utils import convert_enum_to_name_in_dict
 from enums import TrekDifficulty, TrekStatus, UserRole, UserStatus

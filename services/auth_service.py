@@ -4,13 +4,13 @@ from enums import UserRole, UserStatus
 from werkzeug.security import check_password_hash, generate_password_hash
 
 def login(email: str, password: str) -> User | None:
-    user = User.query.filter_by(email=email.lower()).first()
+    user = db.session.query(User).filter_by(email=email.lower()).first()
     if user and check_password_hash(user.password_hash, password):
         return user
     return None
 
 def register(first_name: str, last_name: str, email: str, password: str, role: UserRole, status: UserStatus = UserStatus.ACTIVE) -> User | Exception:
-    if User.query.filter_by(email=email.lower()).first():
+    if db.session.query(User).filter_by(email=email.lower()).first():
         return Exception("Email already exists")
 
     new_user = User(

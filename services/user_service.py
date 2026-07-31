@@ -9,14 +9,14 @@ from werkzeug.security import generate_password_hash
 from typing import Literal
 
 def get_user_by_role(role: UserRole) -> list[User]:
-    return User.query.filter_by(role=role).all()
+    return db.session.query(User).filter_by(role=role).all()
 
 def search_users_by_id_or_name_or_email(search_term: str, role: UserRole | None = None) -> list[User]:
     search_term = escape_search_input(search_term.strip())
     if not search_term:
         return []
 
-    query = User.query.filter(
+    query = db.session.query(User).filter(
         or_(
             cast(User.id, String).like(f"{search_term}%", escape="\\"),
             User.first_name.ilike(f"{search_term}%", escape="\\"),
@@ -32,7 +32,7 @@ def search_users_by_id_or_name_or_email(search_term: str, role: UserRole | None 
 
 def add_user(**user_data) -> User | Exception:
     if "email" in user_data:
-        existing_user = User.query.filter_by(email=user_data["email"]).first()
+        existing_user = db.session.query(User).filter_by(email=user_data["email"]).first()
         if existing_user:
             return Exception("User with this email already exists")
 
@@ -78,7 +78,7 @@ def add_staff_member(**staff_data) -> User | Exception:
         return e
 
 def update_user(user_id, **user_data) -> Literal[True] | Exception:
-    user = User.query.get(user_id)
+    user = db.session.query(User).get(user_id)
     if not user:
         return Exception("User not found")
 
@@ -94,7 +94,7 @@ def update_user(user_id, **user_data) -> Literal[True] | Exception:
         return e
 
 def update_user_with_staff_profile(user_id, **user_data) -> Literal[True] | Exception:
-    user = User.query.get(user_id)
+    user = db.session.query(User).get(user_id)
     if not user:
         return Exception("User not found")
 
@@ -102,7 +102,7 @@ def update_user_with_staff_profile(user_id, **user_data) -> Literal[True] | Exce
         if hasattr(user, key):
             setattr(user, key, value)
 
-    staff_profile = StaffProfile.query.filter_by(user_id=user_id).first()
+    staff_profile = db.session.query(StaffProfile).filter_by(user_id=user_id).first()
     if staff_profile:
         for key in ["experience", "phone_number", "address"]:
             if key in user_data:

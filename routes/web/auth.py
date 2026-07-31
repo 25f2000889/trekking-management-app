@@ -1,5 +1,5 @@
 from flask import Blueprint, flash, session, redirect, render_template, request, url_for
-from decorators import no_auth_required
+from decorators import auth_required, no_auth_required
 from validation import ValidationError, require, require_enum
 from utils import convert_enum_to_name_in_dict
 from enums import UserRole, UserStatus
@@ -93,6 +93,7 @@ def register():
     return render_template("auth/register.html", _form=form, _errors=errors)
 
 @auth_bp.route("/logout", methods=["POST"])
+@auth_required
 def logout():
     session.clear()
     return redirect(url_for("auth.login"))

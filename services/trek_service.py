@@ -7,7 +7,7 @@ from db import db
 from utils import escape_search_input
 
 def get_all_treks():
-    return Trek.query.all()
+    return db.session.query(Trek).all()
 
 def get_assigned_treks_for_staff(staff_id: int, only_statuses: list[TrekStatus] | None = None) -> list[Trek]:
     query = db.session.query(Trek).filter(Trek.assigned_staff_id == staff_id)
@@ -26,7 +26,7 @@ def search_treks_by_name_or_location(search_term: str) -> list[Trek]:
     if not search_term:
         return []
 
-    return Trek.query.filter(
+    return db.session.query(Trek).filter(
         or_(
             Trek.name.ilike(f"{search_term}%", escape="\\"),
             Trek.location.ilike(f"{search_term}%", escape="\\"),
