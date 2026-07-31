@@ -217,15 +217,50 @@ def blacklist_staff(staff_member_id):
     return redirect(url_for("admin.staff"))
 
 
-@admin_bp.route("/users", methods=["GET", "POST"])
+@admin_bp.route("/trekkers", methods=["GET"])
 @auth_required
 @roles_required("ADMIN")
-def users():
-    if request.method == "POST":
-        # Implement logic to create a new user
-        pass
-    # Implement logic to fetch and display users
-    return render_template("admin/users.html", tab="users")
+def trekkers():
+    search_term = request.args.get("search", "")
+    if search_term:
+        search_term = search_term.strip()
+        trekkers = UserService.search_users_by_id_or_name_or_email(search_term, role=UserRole.TREKKER)
+    else:
+        trekkers = UserService.get_user_by_role(UserRole.TREKKER)
+    
+    active = [s for s in trekkers if s.status == UserStatus.ACTIVE]
+    blacklisted = [s for s in trekkers if s.status == UserStatus.BLACKLISTED]
+    
+    return render_template("admin/users.html", tab="trekkers", _form={"search": request.args.get("search", "")}, trekkers={
+        "active": active,
+        "blacklisted": blacklisted,
+    })
+
+@admin_bp.route("/trekkers/blacklist/<int:trekker_id>", methods=["POST"])
+@auth_required
+@roles_required("ADMIN")
+def blacklist_trekker(trekker_id):
+    result = UserService.update_user(trekker_id, status=UserStatus.BLACKLISTED)
+
+    if result is True:
+        flash('Trekker blacklisted successfully', 'success')
+    else:
+        flash('Error: ' + str(result), 'danger')
+
+    return redirect(url_for("admin.trekkers"))
+
+@admin_bp.route("/trekkers/activate/<int:trekker_id>", methods=["POST"])
+@auth_required
+@roles_required("ADMIN")
+def activate_trekker(trekker_id):
+    result = UserService.update_user(trekker_id, status=UserStatus.ACTIVE)
+
+    if result is True:
+        flash('Trekker activated successfully', 'success')
+    else:
+        flash('Error: ' + str(result), 'danger')
+
+    return redirect(url_for("admin.trekkers"))
 
 
 @admin_bp.route("/bookings", methods=["GET", "POST"])
