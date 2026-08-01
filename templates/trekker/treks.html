@@ -1,0 +1,76 @@
+{% extends "trekker/base.html" %}
+
+{% block title %}Browse Treks{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="mb-3">
+        <h1 class="mb-3">Browse Treks</h1>
+        <form class="row mb-3 g-2" method="GET" action="{{ url_for('trekker.treks') }}">
+            <div class="col-7">
+                <input class="form-control" type="search" placeholder="Search by name or location" aria-label="Search"
+                    name="search" value="{{ _form.get('search', '') }}">
+            </div>
+            <div class="col-2">
+                <select class="form-select" name="difficulty">
+                    <option value="">Difficulty</option>
+                    {% for difficulty in enums.TrekDifficulty %}
+                        <option value="{{ difficulty.name }}" {% if _form.get('difficulty')==difficulty.name %}selected{% endif %}>{{ difficulty.value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-2">
+                <select class="form-select" name="sort">
+                    <option value="">Sort By</option>
+                    <option value="name_asc" {% if _form and _form.get('sort')=='name_asc' %}selected{% endif %}>Name
+                        (A-Z)
+                    </option>
+                    <option value="name_desc" {% if _form and _form.get('sort')=='name_desc' %}selected{% endif %}>Name
+                        (Z-A)</option>
+                    <option value="date_asc" {% if _form and _form.get('sort')=='date_asc' %}selected{% endif %}>Date
+                        (Oldest First)</option>
+                    <option value="date_desc" {% if _form and _form.get('sort')=='date_desc' %}selected{% endif %}>Date
+                        (Newest First)</option>
+                </select>
+            </div>
+            <div class="col-1">
+                <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
+            </div>
+        </form>
+    </div>
+    {% include "components/shared/alerts.html" %}
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Location</th>
+                <th scope="col">Difficulty</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Available slots</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if treks|length == 0 %}
+            <tr>
+                <td colspan="7" class="text-center">No treks found.</td>
+            </tr>
+            {% endif %}
+            {% for trek in treks %}
+            <tr>
+                <td>{{ trek.name }}</td>
+                <td>{{ trek.location }}</td>
+                <td>{{ trek.difficulty.value }}</td>
+                <td>{{ trek.duration_days }} day{% if trek.duration_days > 1 %}s{% endif %}</td>
+                <td>{{ trek.available_slots }}</td>
+                <td>
+                    <a href="{{ url_for('staff.trek_details', trek_id=trek.id) }}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-calendar-check me-1"></i> Book Now
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
