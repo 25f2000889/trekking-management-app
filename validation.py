@@ -1,4 +1,5 @@
 from datetime import date
+from enum import Enum
 
 class ValidationError(Exception):
     def __init__(self, field, message):
@@ -41,7 +42,7 @@ def require_int(form, field, label) -> int:
         raise ValidationError(field, f"{label} must be a valid integer")
     return value
 
-def optional_enum(form, field, label, enum_class):
+def optional_enum[E: Enum](form, field, label, enum_class: type[E]) -> E | None:
     value = optional(form, field)
 
     if not value:
@@ -52,7 +53,7 @@ def optional_enum(form, field, label, enum_class):
     except KeyError:
         raise ValidationError(field, f"{label} must be a valid {enum_class.__name__}")
 
-def require_enum(form, field, label, enum_class):
+def require_enum[E: Enum](form, field, label, enum_class: type[E]) -> E:
     value = optional_enum(form, field, label, enum_class)
 
     if value is None:
