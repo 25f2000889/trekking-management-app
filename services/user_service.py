@@ -11,6 +11,9 @@ from typing import Literal
 def get_user_by_role(role: UserRole) -> list[User]:
     return db.session.query(User).filter_by(role=role).all()
 
+def get_active_user_by_id(user_id: int) -> User | None:
+    return db.session.query(User).filter_by(id=user_id, status=UserStatus.ACTIVE).first()
+
 def search_users_by_id_or_name_or_email(search_term: str, role: UserRole | None = None) -> list[User]:
     search_term = escape_search_input(search_term.strip())
     if not search_term:

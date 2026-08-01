@@ -1,4 +1,5 @@
-from flask import redirect, session, url_for
+from flask import flash, redirect, session, url_for
+from services import UserService
 from functools import wraps
 
 
@@ -16,6 +17,13 @@ def auth_required(view):
     def wrapped_view(**kwargs):
         if "user_id" not in session:
             return redirect(url_for("auth.login"))
+
+        user = UserService.get_active_user_by_id(session["user_id"])
+        if not user:
+            session.clear()
+            flash("Your account is blacklisted or does not exist.", "danger")
+            return redirect(url_for("auth.login"))
+
         return view(**kwargs)
     return wrapped_view
 
