@@ -1,0 +1,22 @@
+{% extends "trekker/base.html" %}
+
+{% block title %}{{ trek.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-3">{{ trek.name }}</h1>
+    {% include "components/shared/alerts.html" %}
+    <p>{{ trek.description }}</p>
+    <p><strong>Location:</strong> {{ trek.location }}</p>
+    <p><strong>Difficulty:</strong> {{ trek.difficulty.value }}</p>
+    <p><strong>Dates:</strong> {{ trek.start_date.strftime("%B %d, %Y") }} to {{ trek.end_date.strftime("%B %d, %Y") }} ({{ trek.duration_days }} day{% if trek.duration_days > 1 %}s{% endif %})</p>
+    <p><strong>Available slots:</strong> {{ trek.available_slots }}</p>
+    {% if trek_booking is none %}
+        <form method="POST" action="{{ url_for('trekker.book_trek', trek_id=trek.id) }}">
+            <button type="submit" class="btn btn-primary">Book Now</button>
+        </form>
+    {% else %}
+        <p><strong>You have already booked this trek.</strong></p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,13 +1,25 @@
 from typing import Literal
-from enums import TrekDifficulty
-from enums import TrekStatus
+from enums import TrekDifficulty, TrekStatus, TrekBookingStatus
 from models import Trek
 from sqlalchemy import or_
 from db import db
+from models import TrekBooking, User
 from utils import escape_search_input
 
 def get_all_treks():
     return db.session.query(Trek).all()
+
+def get_trek_booking(user_id: int, trek_id: int) -> TrekBooking | None:
+    return db.session.query(TrekBooking).filter(
+        TrekBooking.user_id == user_id,
+        TrekBooking.trek_id == trek_id
+    ).first()
+
+def get_all_trek_bookings_for_user(user_id: int, include_statuses: list[TrekBookingStatus] | None = None) -> list[TrekBooking]:
+    query = db.session.query(TrekBooking).filter(TrekBooking.user_id == user_id)
+    if include_statuses:
+        query = query.filter(TrekBooking.status.in_(include_statuses))
+    return query.all()
 
 def search_treks(search_term: str | None = None, difficulty: TrekDifficulty | None = None, sort: str | None = None) -> list[Trek]:
     query = db.session.query(Trek).filter(Trek.status == TrekStatus.APPROVED)
@@ -80,6 +92,36 @@ def update_trek(trek_id: int, **trek_data) -> Trek | Exception:
     try:
         db.session.commit()
         return trek
+    except Exception as e:
+        db.session.rollback()
+        return e
+
+def book_trek(user_id: int, trek_id: int) -> Literal[True] | Exception:
+    trek = get_trek_by_id(trek_id, only_statuses=[TrekStatus.APPROVED])
+    if not trek:
+        return Exception("Trek not found or not available for booking")
+
+    user = db.session.query(User).filter(User.id == user_id).first()
+    if not user:
+        return Exception("User not found")
+
+    already_booked = db.session.query(TrekBooking).filter(
+        TrekBooking.user_id == user_id,
+        TrekBooking.trek_id == trek_id
+    ).first()
+    if already_booked:
+        return Exception("User has already booked this trek")
+
+    if trek.available_slots <= 0:
+        return Exception("No available slots for this trek")
+
+    booking = TrekBooking(user_id=user_id, trek_id=trek_id)
+    db.session.add(booking)
+    trek.available_slots -= 1
+
+    try:
+        db.session.commit()
+        return True
     except Exception as e:
         db.session.rollback()
         return e
