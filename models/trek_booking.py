@@ -20,13 +20,13 @@ class TrekBooking(db.Model):
     status: Mapped[TrekBookingStatus] = mapped_column(
         Enum(TrekBookingStatus),
         nullable=False,
-        default=TrekBookingStatus.PENDING,
+        default=TrekBookingStatus.BOOKED,
     )
 
     user: Mapped["User"] = relationship("User", back_populates="trek_bookings")
     trek: Mapped["Trek"] = relationship("Trek", back_populates="trek_bookings")
 
-    def __init__(self, user_id: int, trek_id: int, status: TrekBookingStatus = TrekBookingStatus.PENDING):
+    def __init__(self, user_id: int, trek_id: int, status: TrekBookingStatus = TrekBookingStatus.BOOKED):
         self.user_id = user_id
         self.trek_id = trek_id
         self.status = status

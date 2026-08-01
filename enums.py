@@ -24,6 +24,5 @@ class TrekStatus(enum.Enum):
     COMPLETED = "Completed"
 
 class TrekBookingStatus(enum.Enum):
-    PENDING = "Pending"
     BOOKED = "Booked"
     CANCELLED = "Cancelled"
