@@ -16,7 +16,7 @@
             <button type="submit" class="btn btn-primary">Book Now</button>
         </form>
     {% else %}
-        <p><strong>You have already booked this trek.</strong></p>
+        <p><strong>You have already booked this trek. Goto <a href="{{ url_for('trekker.my_bookings') }}">My Bookings</a></strong></p>
     {% endif %}
 </div>
 {% endblock %}

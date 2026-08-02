@@ -23,7 +23,7 @@
                         <td>{{ booking.trek.name }}</td>
                         <td>{{ booking.trek.location }}</td>
                         <td>{{ booking.trek.start_date.strftime("%B %d, %Y") }} to {{ booking.trek.end_date.strftime("%B %d, %Y") }}</td>
-                        <td>{{ booking.booking_date.strftime("%B %d, %Y") }}</td>
+                        <td>{{ booking.booking_date.strftime("%B %d, %Y %I:%M %p") }}</td>
                         <td>
                             <a href="{{ url_for('trekker.trek_details', trek_id=booking.trek.id) }}" class="btn btn-primary btn-sm">View Details</a>
                         </td>
