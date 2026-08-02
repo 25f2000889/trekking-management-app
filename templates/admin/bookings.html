@@ -1,0 +1,51 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Manage Bookings{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-3">Manage Bookings</h1>
+    {% include "components/shared/alerts.html" %}
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Booking ID</th>
+                <th scope="col">User</th>
+                <th scope="col">Trek Name</th>
+                <th scope="col">Booking Date</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if bookings|length == 0 %}
+                <tr>
+                    <td colspan="6">No bookings found.</td>
+                </tr>
+            {% else %}
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.id }}</td>
+                    <td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
+                    <td>{{ booking.trek.name }}</td>
+                    <td>{{ booking.booking_date.strftime("%B %d, %Y %I:%M %p") }}</td>
+                    <td>{{ booking.status.value }}</td>
+                    <td>
+                        {% if booking.status == enums.TrekBookingStatus.BOOKED %}
+                            <form method="POST" action="{{ url_for('admin.cancel_booking', booking_id=booking.id) }}"
+                                onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                            </form>
+                        {% else %}
+                            <form method="POST" action="{{ url_for('admin.restore_booking', booking_id=booking.id) }}"
+                                onsubmit="return confirm('Are you sure you want to restore this booking?');">
+                                <button type="submit" class="btn btn-success btn-sm">Restore</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+{% endblock %}

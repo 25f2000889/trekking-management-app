@@ -15,6 +15,12 @@ def get_trek_booking(user_id: int, trek_id: int) -> TrekBooking | None:
         TrekBooking.trek_id == trek_id
     ).first()
 
+def get_all_trek_bookings(include_statuses: list[TrekBookingStatus] | None = None) -> list[TrekBooking]:
+    query = db.session.query(TrekBooking)
+    if include_statuses:
+        query = query.filter(TrekBooking.status.in_(include_statuses))
+    return query.all()
+
 def get_all_trek_bookings_for_user(user_id: int, include_statuses: list[TrekBookingStatus] | None = None) -> list[TrekBooking]:
     query = db.session.query(TrekBooking).filter(TrekBooking.user_id == user_id)
     if include_statuses:
@@ -92,6 +98,34 @@ def update_trek(trek_id: int, **trek_data) -> Trek | Exception:
     try:
         db.session.commit()
         return trek
+    except Exception as e:
+        db.session.rollback()
+        return e
+
+def update_trek_booking(trek_booking_id: int, **trek_booking_data) -> TrekBooking | Exception:
+    trek_booking = db.session.query(TrekBooking).filter(TrekBooking.id == trek_booking_id).first()
+    if not trek_booking:
+        return Exception("Trek booking not found")
+
+    if trek_booking.status == TrekBookingStatus.CANCELLED and trek_booking_data.get("status") == TrekBookingStatus.BOOKED:
+        trek = get_trek_by_id(trek_booking.trek_id)
+        if not trek:
+            return Exception("Associated trek not found")
+        if trek.available_slots <= 0:
+            return Exception("No available slots for this trek")
+        trek.available_slots -= 1
+    elif trek_booking.status == TrekBookingStatus.BOOKED and trek_booking_data.get("status") == TrekBookingStatus.CANCELLED:
+        trek = get_trek_by_id(trek_booking.trek_id)
+        if not trek:
+            return Exception("Associated trek not found")
+        trek.available_slots += 1
+
+    for key, value in trek_booking_data.items():
+        setattr(trek_booking, key, value)
+
+    try:
+        db.session.commit()
+        return trek_booking
     except Exception as e:
         db.session.rollback()
         return e

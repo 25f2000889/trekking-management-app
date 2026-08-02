@@ -1,9 +1,10 @@
 from flask import Blueprint, redirect, render_template, request, url_for, session, flash
 
 from decorators import auth_required, roles_required
+from models.trek_booking import TrekBooking
 from validation import ValidationError, optional, require, require_int, optional_int, require_enum, optional_enum, require_date
 from utils import convert_enum_to_name_in_dict
-from enums import TrekDifficulty, TrekStatus, UserRole, UserStatus
+from enums import TrekBookingStatus, TrekDifficulty, TrekStatus, UserRole, UserStatus
 from services import TrekService, UserService
 from models import Trek
 
@@ -262,12 +263,35 @@ def activate_trekker(trekker_id):
     return redirect(url_for("admin.trekkers"))
 
 
-@admin_bp.route("/bookings", methods=["GET", "POST"])
+@admin_bp.get("/bookings")
 @auth_required
 @roles_required("ADMIN")
 def bookings():
-    if request.method == "POST":
-        # Implement logic to create a new booking
-        pass
-    # Implement logic to fetch and display bookings
-    return render_template("admin/bookings.html", tab="bookings")
+    bookings = TrekService.get_all_trek_bookings()
+    return render_template("admin/bookings.html", tab="bookings", bookings=bookings)
+
+@admin_bp.post("/bookings/cancel/<int:booking_id>")
+@auth_required
+@roles_required("ADMIN")
+def cancel_booking(booking_id):
+    result = TrekService.update_trek_booking(booking_id, status=TrekBookingStatus.CANCELLED)
+
+    if isinstance(result, TrekBooking):
+        flash('Booking cancelled successfully', 'success')
+    else:
+        flash('Error: ' + str(result), 'danger')
+
+    return redirect(url_for("admin.bookings"))
+
+@admin_bp.post("/bookings/restore/<int:booking_id>")
+@auth_required
+@roles_required("ADMIN")
+def restore_booking(booking_id):
+    result = TrekService.update_trek_booking(booking_id, status=TrekBookingStatus.BOOKED)
+
+    if isinstance(result, TrekBooking):
+        flash('Booking restored successfully', 'success')
+    else:
+        flash('Error: ' + str(result), 'danger')
+
+    return redirect(url_for("admin.bookings"))
