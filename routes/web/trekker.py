@@ -64,3 +64,19 @@ def book_trek(trek_id):
         flash("Failed to book trek: " + str(success), "danger")
 
     return redirect(url_for("trekker.trek_details", trek_id=trek_id))
+
+@trekker_bp.get("/my_bookings")
+@auth_required
+@roles_required("TREKKER")
+def my_bookings():
+    trek_bookings = TrekService.get_all_trek_bookings_for_user(user_id=int(session.get("user_id", "0")), include_statuses=[TrekBookingStatus.BOOKED])
+
+    return render_template("trekker/my_bookings.html", tab="my_bookings", trek_bookings=trek_bookings)
+
+@trekker_bp.get("/history")
+@auth_required
+@roles_required("TREKKER")
+def history():
+    trek_bookings = TrekService.get_all_trek_bookings_for_user(user_id=int(session.get("user_id", "0")))
+
+    return render_template("trekker/history.html", tab="history", trek_bookings=trek_bookings)

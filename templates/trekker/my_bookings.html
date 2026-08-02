@@ -1,0 +1,38 @@
+{% extends "trekker/base.html" %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-3">My Bookings</h1>
+    {% include "components/shared/alerts.html" %}
+    {% if trek_bookings|length > 0 %}
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Trek Name</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Trek Dates</th>
+                    <th scope="col">Booking Date</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in trek_bookings %}
+                    <tr>
+                        <td>{{ booking.trek.name }}</td>
+                        <td>{{ booking.trek.location }}</td>
+                        <td>{{ booking.trek.start_date.strftime("%B %d, %Y") }} to {{ booking.trek.end_date.strftime("%B %d, %Y") }}</td>
+                        <td>{{ booking.booking_date.strftime("%B %d, %Y") }}</td>
+                        <td>
+                            <a href="{{ url_for('trekker.trek_details', trek_id=booking.trek.id) }}" class="btn btn-primary btn-sm">View Details</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You have no bookings. <a href="{{ url_for('trekker.treks') }}">Browse Treks</a></p>
+    {% endif %}
+</div>
+{% endblock %}
