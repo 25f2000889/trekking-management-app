@@ -14,8 +14,20 @@ admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 @auth_required
 @roles_required("ADMIN")
 def dashboard():
-    # Implement logic to fetch and display admin dashboard data
-    return render_template("admin/dashboard.html", tab="dashboard")
+    treks = TrekService.get_all_treks()
+    users = UserService.get_user_by_role(UserRole.TREKKER)
+    staff_members = UserService.get_user_by_role(UserRole.STAFF)
+    bookings = TrekService.get_all_trek_bookings()
+
+    return render_template(
+        "admin/dashboard.html",
+        tab="dashboard",
+        total_treks=len(treks),
+        total_active_users=len([user for user in users if user.status == UserStatus.ACTIVE]),
+        total_active_staff=len([staff_member for staff_member in staff_members if staff_member.status == UserStatus.ACTIVE]),
+        total_bookings=len(bookings),
+        recent_bookings=sorted(bookings, key=lambda booking: booking.booking_date, reverse=True)[:5],
+    )
 
 
 @admin_bp.get("/treks")

@@ -8,5 +8,69 @@
         Your account is pending approval. Please wait for the administrator to approve your account before you can access the staff dashboard.
     </div>
 {% else %}
+<div class="container">
+    <h1 class="mb-3">Dashboard</h1>
+    {% include "components/shared/alerts.html" %}
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <p class="card-text text-muted mb-1">Assigned Treks</p>
+                    <p class="h2 mb-0">{{ assigned_treks_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <p class="card-text text-muted mb-1">Total Participants</p>
+                    <p class="h2 mb-0">{{ total_participants }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <p class="card-text text-muted mb-1">Open Treks</p>
+                    <p class="h2 mb-0">{{ open_treks }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="h4 mb-3">My Recent Assigned Treks</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if recent_assigned_treks|length == 0 %}
+                <tr>
+                    <td colspan="5" class="text-center">No assigned treks found.</td>
+                </tr>
+                {% endif %}
+                {% for trek in recent_assigned_treks %}
+                <tr>
+                    <td>{{ trek.name }}</td>
+                    <td>{{ trek.location }}</td>
+                    <td>{{ trek.start_date.strftime("%B %d, %Y") }}</td>
+                    <td>{{ trek.status.value }}</td>
+                    <td>
+                        <a href="{{ url_for('staff.trek_details', trek_id=trek.id) }}" class="btn btn-sm btn-primary">Manage</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endif %}
 {% endblock %}

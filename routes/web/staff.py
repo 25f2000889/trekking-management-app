@@ -10,7 +10,24 @@ staff_bp = Blueprint("staff", __name__, url_prefix="/staff")
 @auth_required
 @roles_required("STAFF")
 def dashboard():
-    return render_template("staff/dashboard.html", tab="dashboard")
+    assigned_treks = TrekService.get_assigned_treks_for_staff(
+        session["user_id"],
+        only_statuses=[TrekStatus.APPROVED, TrekStatus.STARTED, TrekStatus.COMPLETED],
+    )
+    total_participants = sum(
+        len([booking for booking in trek.trek_bookings if booking.status == TrekBookingStatus.BOOKED])
+        for trek in assigned_treks
+    )
+    open_treks = len([trek for trek in assigned_treks if trek.status == TrekStatus.APPROVED])
+
+    return render_template(
+        "staff/dashboard.html",
+        tab="dashboard",
+        assigned_treks_count=len(assigned_treks),
+        total_participants=total_participants,
+        open_treks=open_treks,
+        recent_assigned_treks=sorted(assigned_treks, key=lambda trek: trek.created_at, reverse=True)[:3],
+    )
 
 @staff_bp.get("/treks")
 @auth_required

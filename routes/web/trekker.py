@@ -10,7 +10,19 @@ trekker_bp = Blueprint("trekker", __name__, url_prefix="/trekker")
 @auth_required
 @roles_required("TREKKER")
 def dashboard():
-    return render_template("trekker/dashboard.html", tab="dashboard")
+    recent_treks = sorted(TrekService.search_treks(), key=lambda trek: trek.created_at, reverse=True)[:5]
+    trek_bookings = TrekService.get_all_trek_bookings_for_user(
+        user_id=int(session.get("user_id", "0")),
+        include_statuses=[TrekBookingStatus.BOOKED],
+    )
+
+    return render_template(
+        "trekker/dashboard.html",
+        tab="dashboard",
+        recent_treks=recent_treks,
+        already_booked_treks=[booking.trek_id for booking in trek_bookings],
+        recent_bookings=sorted(trek_bookings, key=lambda booking: booking.booking_date, reverse=True)[:3],
+    )
 
 @trekker_bp.get("/treks")
 @auth_required

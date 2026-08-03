@@ -3,4 +3,77 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
+<div class="container">
+	<h1 class="mb-3">Dashboard</h1>
+	{% include "components/shared/alerts.html" %}
+
+	<div class="row g-3 mb-4">
+		<div class="col-12 col-md-6 col-xl-3">
+			<div class="card h-100">
+				<div class="card-body">
+					<p class="card-text text-muted mb-1">Total Treks</p>
+					<p class="h2 mb-0">{{ total_treks }}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-12 col-md-6 col-xl-3">
+			<div class="card h-100">
+				<div class="card-body">
+					<p class="card-text text-muted mb-1">Active Users</p>
+					<p class="h2 mb-0">{{ total_active_users }}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-12 col-md-6 col-xl-3">
+			<div class="card h-100">
+				<div class="card-body">
+					<p class="card-text text-muted mb-1">Active Staff</p>
+					<p class="h2 mb-0">{{ total_active_staff }}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-12 col-md-6 col-xl-3">
+			<div class="card h-100">
+				<div class="card-body">
+					<p class="card-text text-muted mb-1">Total Bookings</p>
+					<p class="h2 mb-0">{{ total_bookings }}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<h2 class="h4 mb-0">Recent Bookings</h2>
+		<a href="{{ url_for('admin.bookings') }}" class="btn btn-primary">View All Bookings</a>
+	</div>
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Booking ID</th>
+					<th scope="col">User</th>
+					<th scope="col">Trek</th>
+					<th scope="col">Booked On</th>
+					<th scope="col">Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% if recent_bookings|length == 0 %}
+				<tr>
+					<td colspan="5" class="text-center">No bookings found.</td>
+				</tr>
+				{% endif %}
+				{% for booking in recent_bookings %}
+				<tr>
+					<td>{{ booking.id }}</td>
+					<td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
+					<td>{{ booking.trek.name }}</td>
+					<td>{{ booking.booking_date.strftime("%B %d, %Y %I:%M %p") }}</td>
+					<td>{{ booking.status.value }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
 {% endblock %}
