@@ -3,10 +3,10 @@
 {% block title %}Profile{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="mb-3">Profile</h1>
+<div class="container-fluid">
+    <div class="page-heading"><div><h1>Your Profile</h1><p>Keep your TrekFlow information up to date.</p></div></div>
     {% include "components/shared/alerts.html" %}
-    <form method="POST" action="{{ url_for('shared.profile') }}">
+    <form class="card border-0 shadow-sm p-4" method="POST" action="{{ url_for('shared.profile') }}">
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
             <input type="email" class="form-control disabled" id="email" name="email" value="{{ current_user.email }}" required readonly disabled>
@@ -61,7 +61,7 @@
             {% endif %}
         </div>
         {% endif %}
-        <button type="submit" class="btn btn-primary">Update Profile</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Update Profile</button>
     </form>
 </div>
 {% endblock %}

@@ -5,11 +5,11 @@
 {% block header %}
 {% endblock %}
 
-<div class="d-grid" style="grid-template-columns: 200px 1fr;">
+<div class="app-layout d-flex">
     {% block sidebar %}
     {% endblock %}
 
-    <main class="p-4">
+    <main class="app-main flex-grow-1 p-4">
         {% block content %}
         {% endblock %}
     </main>

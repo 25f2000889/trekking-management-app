@@ -1,32 +1,33 @@
-<aside class="p-3 bg-light sidebar" style="width: 200px; height: calc(100vh - 56px);">
-    <div class="d-flex flex-column align-items-start gap-2">
-        <div class="w-100 py-2 px-3 {% if tab == 'dashboard' %}active{% endif %}">
-            <a class="nav-link primary" href="{{ url_for('staff.dashboard') }}">
-                <i class="bi bi-house-door-fill me-2"></i>
+<aside class="p-3 sidebar">
+    <div class="sidebar-nav d-flex flex-column gap-2">
+        <div class="small text-uppercase text-muted fw-semibold px-3 mb-2">Staff Workspace</div>
+        <div class="nav-item w-100 py-2 px-3 {% if tab == 'dashboard' %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('staff.dashboard') }}">
+                <i class="bi bi-house-door-fill nav-icon me-2"></i>
                 Dashboard
             </a>
         </div>
 
         {% if current_user.status == enums.UserStatus.ACTIVE %}
-            <div class="w-100 py-2 px-3 {% if tab == 'treks' %}active{% endif %}">
-                <a class="nav-link primary" href="{{ url_for('staff.treks') }}">
-                    <i class="bi bi-signpost-split-fill me-2"></i>
+            <div class="nav-item w-100 py-2 px-3 {% if tab == 'treks' %}active{% endif %}">
+                <a class="nav-link" href="{{ url_for('staff.treks') }}">
+                    <i class="bi bi-signpost-split-fill nav-icon me-2"></i>
                     My Treks
                 </a>
             </div>
         {% endif %}
 
-        <div class="w-100 py-2 px-3 {% if tab == 'profile' %}active{% endif %}">
-            <a class="nav-link primary" href="{{ url_for('shared.profile') }}">
-                <i class="bi bi-person-circle me-2"></i>
+        <div class="nav-item w-100 py-2 px-3 {% if tab == 'profile' %}active{% endif %}">
+            <a class="nav-link" href="{{ url_for('shared.profile') }}">
+                <i class="bi bi-person-circle nav-icon me-2"></i>
                 Profile
             </a>
         </div>
 
-        <form method="POST" action="{{ url_for('auth.logout') }}"
+        <form class="mt-auto" method="POST" action="{{ url_for('auth.logout') }}"
             onsubmit="return confirm('Are you sure you want to logout?')">
             <button type="submit" class="nav-link btn btn-link py-2 px-3 text-danger">
-                <i class="bi bi-box-arrow-right me-2"></i>
+                <i class="bi bi-box-arrow-right nav-icon me-2"></i>
                 Logout
             </button>
         </form>

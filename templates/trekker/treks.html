@@ -3,15 +3,14 @@
 {% block title %}Browse Treks{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="mb-3">
-        <h1 class="mb-3">Browse Treks</h1>
-        <form class="row mb-3 g-2" method="GET" action="{{ url_for('trekker.treks') }}">
-            <div class="col-7">
+<div class="container-fluid">
+    <div class="page-heading"><div><h1>Browse Treks</h1><p>Find your next route and reserve a place.</p></div></div>
+        <form class="filter-toolbar row mb-3 g-2" method="GET" action="{{ url_for('trekker.treks') }}">
+            <div class="col-12 col-lg-6">
                 <input class="form-control" type="search" placeholder="Search by name or location" aria-label="Search"
                     name="search" value="{{ _form.get('search', '') }}">
             </div>
-            <div class="col-2">
+            <div class="col-12 col-sm-4 col-lg-2">
                 <select class="form-select" name="difficulty">
                     <option value="">Difficulty</option>
                     {% for difficulty in enums.TrekDifficulty %}
@@ -19,7 +18,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-2">
+            <div class="col-12 col-sm-4 col-lg-2">
                 <select class="form-select" name="sort">
                     <option value="">Sort By</option>
                     <option value="name_asc" {% if _form and _form.get('sort')=='name_asc' %}selected{% endif %}>Name
@@ -33,13 +32,12 @@
                         (Newest First)</option>
                 </select>
             </div>
-            <div class="col-1">
+            <div class="col-12 col-sm-4 col-lg-2">
                 <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
             </div>
         </form>
-    </div>
     {% include "components/shared/alerts.html" %}
-    <table class="table table-bordered table-striped">
+    <div class="table-shell table-responsive"><table class="table table-hover align-middle">
         <thead>
             <tr>
                 <th scope="col">Name</th>
@@ -53,14 +51,14 @@
         <tbody>
             {% if treks|length == 0 %}
             <tr>
-                <td colspan="7" class="text-center">No treks found.</td>
+                <td colspan="6" class="empty-state text-center"><i class="bi bi-signpost-split"></i>No treks found.</td>
             </tr>
             {% endif %}
             {% for trek in treks %}
             <tr>
                 <td>{{ trek.name }}</td>
                 <td>{{ trek.location }}</td>
-                <td>{{ trek.difficulty.value }}</td>
+                <td><span class="badge {% if trek.difficulty.name == 'EASY' %}text-bg-success{% elif trek.difficulty.name == 'MODERATE' %}text-bg-warning{% else %}text-bg-danger{% endif %}">{{ trek.difficulty.value }}</span></td>
                 <td>{{ trek.duration_days }} day{% if trek.duration_days > 1 %}s{% endif %}</td>
                 <td>{{ trek.available_slots }}</td>
                 <td>
@@ -76,6 +74,6 @@
             </tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table></div>
 </div>
 {% endblock %}

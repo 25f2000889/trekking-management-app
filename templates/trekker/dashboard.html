@@ -3,16 +3,16 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="container">
-	<h1 class="mb-4">Welcome {{ current_user.first_name }} {{ current_user.last_name }}!</h1>
+<div class="container-fluid">
+	<div class="page-heading"><div><h1>Welcome, {{ current_user.first_name }}!</h1><p>Ready to find your next adventure?</p></div></div>
 	{% include "components/shared/alerts.html" %}
 
 	<div class="d-flex justify-content-between align-items-center mb-3">
 		<h2 class="h4 mb-0">Recent Treks</h2>
-		<a href="{{ url_for('trekker.treks') }}" class="btn btn-primary">Browse More Treks</a>
+		<a href="{{ url_for('trekker.treks') }}" class="btn btn-primary"><i class="bi bi-compass me-1"></i>Browse Treks</a>
 	</div>
-	<div class="table-responsive mb-4">
-		<table class="table table-bordered table-striped">
+	<div class="table-shell table-responsive mb-4">
+		<table class="table table-hover align-middle">
 			<thead>
 				<tr>
 					<th scope="col">Name</th>
@@ -26,7 +26,7 @@
 			<tbody>
 				{% if recent_treks|length == 0 %}
 				<tr>
-					<td colspan="6" class="text-center">No treks available.</td>
+					<td colspan="6" class="empty-state text-center"><i class="bi bi-signpost-split"></i>No treks available.</td>
 				</tr>
 				{% endif %}
 				{% for trek in recent_treks %}
@@ -55,8 +55,8 @@
 		<h2 class="h4 mb-0">My Recent Bookings</h2>
 		<a href="{{ url_for('trekker.my_bookings') }}" class="btn btn-primary">View All</a>
 	</div>
-	<div class="table-responsive">
-		<table class="table table-bordered table-striped">
+	<div class="table-shell table-responsive">
+		<table class="table table-hover align-middle">
 			<thead>
 				<tr>
 					<th scope="col">Trek Name</th>
@@ -69,7 +69,7 @@
 			<tbody>
 				{% if recent_bookings|length == 0 %}
 				<tr>
-					<td colspan="5" class="text-center">You have no recent bookings.</td>
+					<td colspan="5" class="empty-state text-center"><i class="bi bi-calendar-x"></i>You have no recent bookings.</td>
 				</tr>
 				{% endif %}
 				{% for booking in recent_bookings %}

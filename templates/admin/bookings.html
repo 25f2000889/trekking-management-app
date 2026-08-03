@@ -3,10 +3,10 @@
 {% block title %}Manage Bookings{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="mb-3">Manage Bookings</h1>
+<div class="container-fluid">
+    <div class="page-heading"><div><h1>Manage Bookings</h1><p>Review and maintain trek reservations.</p></div></div>
     {% include "components/shared/alerts.html" %}
-    <table class="table table-bordered table-striped">
+    <div class="table-shell table-responsive"><table class="table table-hover align-middle">
         <thead>
             <tr>
                 <th scope="col">Booking ID</th>
@@ -20,7 +20,7 @@
         <tbody>
             {% if bookings|length == 0 %}
                 <tr>
-                    <td colspan="6">No bookings found.</td>
+                    <td colspan="6" class="empty-state text-center"><i class="bi bi-calendar-x"></i>No bookings found.</td>
                 </tr>
             {% else %}
                 {% for booking in bookings %}
@@ -29,7 +29,7 @@
                     <td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
                     <td>{{ booking.trek.name }}</td>
                     <td>{{ booking.booking_date.strftime("%B %d, %Y %I:%M %p") }}</td>
-                    <td>{{ booking.status.value }}</td>
+                    <td><span class="badge {% if booking.status == enums.TrekBookingStatus.BOOKED %}text-bg-success{% else %}text-bg-secondary{% endif %}">{{ booking.status.value }}</span></td>
                     <td>
                         {% if booking.status == enums.TrekBookingStatus.BOOKED %}
                             <form method="POST" action="{{ url_for('admin.cancel_booking', booking_id=booking.id) }}"
@@ -47,5 +47,5 @@
                 {% endfor %}
             {% endif %}
         </tbody>
-    </table>
+    </table></div>
 {% endblock %}
