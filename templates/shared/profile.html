@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <div class="page-heading"><div><h1>Your Profile</h1><p>Keep your TrekFlow information up to date.</p></div></div>
     {% include "components/shared/alerts.html" %}
-    <form class="card border-0 shadow-sm p-4" method="POST" action="{{ url_for('shared.profile') }}">
+    <form class="card border-0 shadow-sm p-4" method="POST" action="{{ url_for('shared.profile') }}" novalidate>
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
             <input type="email" class="form-control disabled" id="email" name="email" value="{{ current_user.email }}" required readonly disabled>
@@ -64,4 +64,19 @@
         <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Update Profile</button>
     </form>
 </div>
+<script>
+    const profileForm = document.querySelector('form[action="{{ url_for('shared.profile') }}"]');
+
+    profileForm.addEventListener('submit', (event) => {
+        profileForm.querySelectorAll('[required]:not([disabled])').forEach((field) => {
+            field.setCustomValidity(field.value.trim() ? '' : `${field.labels[0].textContent.trim()} is required.`);
+        });
+
+        profileForm.classList.add('was-validated');
+        if (!profileForm.checkValidity()) {
+            event.preventDefault();
+            profileForm.reportValidity();
+        }
+    });
+</script>
 {% endblock %}

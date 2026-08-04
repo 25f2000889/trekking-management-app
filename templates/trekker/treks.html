@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container-fluid">
     <div class="page-heading"><div><h1>Browse Treks</h1><p>Find your next route and reserve a place.</p></div></div>
-        <form class="filter-toolbar row mb-3 g-2" method="GET" action="{{ url_for('trekker.treks') }}">
+        <form class="filter-toolbar row mb-3 g-2" method="GET" action="{{ url_for('trekker.treks') }}" novalidate>
             <div class="col-12 col-lg-6">
                 <input class="form-control" type="search" placeholder="Search by name or location" aria-label="Search"
                     name="search" value="{{ _form.get('search', '') }}">
@@ -76,4 +76,16 @@
         </tbody>
     </table></div>
 </div>
+<script>
+    const browseTreksForm = document.querySelector('.filter-toolbar');
+
+    browseTreksForm.addEventListener('submit', (event) => {
+        browseTreksForm.elements.search.value = browseTreksForm.elements.search.value.trim();
+        browseTreksForm.classList.add('was-validated');
+        if (!browseTreksForm.checkValidity()) {
+            event.preventDefault();
+            browseTreksForm.reportValidity();
+        }
+    });
+</script>
 {% endblock %}

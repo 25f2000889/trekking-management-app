@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <div class="mb-3">
         <h1 class="mb-3">Trekkers Management</h1>
-        <form class="filter-toolbar d-flex mb-3" method="GET" action="{{ url_for('admin.trekkers') }}">
+        <form class="filter-toolbar d-flex mb-3" method="GET" action="{{ url_for('admin.trekkers') }}" novalidate>
             <input class="form-control me-2" type="search" placeholder="Search by name or email" aria-label="Search"
                 name="search" value="{{ _form.get('search', '') }}">
             <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
@@ -102,4 +102,16 @@
         </div>
     </div>
 </div>
+<script>
+    const trekkerFilterForm = document.querySelector('.filter-toolbar');
+
+    trekkerFilterForm.addEventListener('submit', (event) => {
+        trekkerFilterForm.elements.search.value = trekkerFilterForm.elements.search.value.trim();
+        trekkerFilterForm.classList.add('was-validated');
+        if (!trekkerFilterForm.checkValidity()) {
+            event.preventDefault();
+            trekkerFilterForm.reportValidity();
+        }
+    });
+</script>
 {% endblock %}

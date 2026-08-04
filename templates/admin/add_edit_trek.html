@@ -6,7 +6,7 @@
 <div class="container">
     <h1 class="mb-3">{% if trek_id %}Edit{% else %}Add{% endif %} Trek</h1>
     {% include "components/shared/alerts.html" %}
-    <form method="POST" action="{% if trek_id %}{{ url_for('admin.edit_trek', trek_id=trek_id) }}{% else %}{{ url_for('admin.add_trek') }}{% endif %}">
+    <form method="POST" action="{% if trek_id %}{{ url_for('admin.edit_trek', trek_id=trek_id) }}{% else %}{{ url_for('admin.add_trek') }}{% endif %}" novalidate>
         <div class="row mb-3">
             <div class="col-12">
                 <label for="name" class="form-label">Trek Name</label>
@@ -140,4 +140,26 @@
         <button type="submit" class="btn btn-primary">{% if trek_id %}Update{% else %}Add{% endif %} Trek</button>
     </form>
 </div>
+<script>
+    const trekForm = document.querySelector('form[method="POST"]');
+
+    trekForm.addEventListener('submit', (event) => {
+        trekForm.querySelectorAll('[required]').forEach((field) => {
+            field.setCustomValidity(field.value.trim() ? '' : `${field.labels[0].textContent.trim()} is required.`);
+        });
+
+        ['duration_days', 'available_slots'].forEach((fieldName) => {
+            const field = trekForm.elements[fieldName];
+            if (field.value && !Number.isInteger(Number(field.value))) {
+                field.setCustomValidity(`${field.labels[0].textContent.trim()} must be a valid integer.`);
+            }
+        });
+
+        trekForm.classList.add('was-validated');
+        if (!trekForm.checkValidity()) {
+            event.preventDefault();
+            trekForm.reportValidity();
+        }
+    });
+</script>
 {% endblock %}

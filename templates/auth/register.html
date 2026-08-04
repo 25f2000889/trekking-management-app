@@ -16,7 +16,7 @@
                         </p>
                     </div>
 
-                    <form method="POST" action="{{ url_for('auth.register') }}">
+                    <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
                         <div class="mb-3">
                             <label for="first_name" class="form-label">
                                 First Name
@@ -116,4 +116,26 @@
         </div>
     </div>
 </div>
+<script>
+    const registerForm = document.querySelector('form[action="{{ url_for('auth.register') }}"]');
+
+    registerForm.addEventListener('submit', (event) => {
+        const requiredFields = registerForm.querySelectorAll('[required]');
+        requiredFields.forEach((field) => {
+            field.setCustomValidity(field.value.trim() ? '' : `${field.labels[0].textContent.trim()} is required.`);
+        });
+
+        const password = registerForm.elements.password;
+        const confirmPassword = registerForm.elements.confirm_password;
+        if (password.value && confirmPassword.value && password.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity('Passwords do not match.');
+        }
+
+        registerForm.classList.add('was-validated');
+        if (!registerForm.checkValidity()) {
+            event.preventDefault();
+            registerForm.reportValidity();
+        }
+    });
+</script>
 {% endblock %}

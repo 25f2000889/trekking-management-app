@@ -28,8 +28,8 @@
                     <div class="row w-100">
                         <div class="d-flex col-6 pt-2 justify-content-end"><strong>Available Slots:</strong></div>
                         <div class="col-6">
-                            <form id="updateSlotsForm" method="POST" action="{{ url_for('staff.trek_details', trek_id=trek.id) }}">
-                                <input type="number" id="availableSlotsInput" name="available_slots" class="form-control {% if _errors.get('available_slots') %}is-invalid{% endif %}" value="{{ _form.get('available_slots', trek.available_slots) }}" min="0">
+                            <form id="updateSlotsForm" method="POST" action="{{ url_for('staff.trek_details', trek_id=trek.id) }}" novalidate>
+                                <input type="number" id="availableSlotsInput" name="available_slots" class="form-control {% if _errors.get('available_slots') %}is-invalid{% endif %}" value="{{ _form.get('available_slots', trek.available_slots) }}" min="0" required>
                                 {% if _errors.get('available_slots') %}
                                     <div class="invalid-feedback">{{ _errors.get('available_slots') }}</div>
                                 {% endif %}
@@ -100,4 +100,23 @@
         </div>
     </div>
 </div>
+<script>
+    const updateSlotsForm = document.getElementById('updateSlotsForm');
+
+    updateSlotsForm.addEventListener('submit', (event) => {
+        const availableSlots = updateSlotsForm.elements.available_slots;
+        const value = Number(availableSlots.value);
+        availableSlots.setCustomValidity(
+            availableSlots.value && Number.isInteger(value) && value >= 0
+                ? ''
+                : 'Available Slots must be a non-negative integer.'
+        );
+
+        updateSlotsForm.classList.add('was-validated');
+        if (!updateSlotsForm.checkValidity()) {
+            event.preventDefault();
+            updateSlotsForm.reportValidity();
+        }
+    });
+</script>
 {% endblock %}

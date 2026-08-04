@@ -16,7 +16,7 @@
                         </p>
                     </div>
 
-                    <form method="POST" action="{{ url_for('auth.login') }}">
+                    <form method="POST" action="{{ url_for('auth.login') }}" novalidate>
                         <div class="mb-3">
                             <label for="email" class="form-label">
                                 Email
@@ -62,4 +62,20 @@
         </div>
     </div>
 </div>
+<script>
+    const loginForm = document.querySelector('form[action="{{ url_for('auth.login') }}"]');
+
+    loginForm.addEventListener('submit', (event) => {
+        const requiredFields = loginForm.querySelectorAll('[required]');
+        requiredFields.forEach((field) => {
+            field.setCustomValidity(field.value.trim() ? '' : `${field.labels[0].textContent.trim()} is required.`);
+        });
+
+        loginForm.classList.add('was-validated');
+        if (!loginForm.checkValidity()) {
+            event.preventDefault();
+            loginForm.reportValidity();
+        }
+    });
+</script>
 {% endblock %}
