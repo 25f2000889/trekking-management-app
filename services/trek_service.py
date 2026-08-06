@@ -27,6 +27,12 @@ def get_all_trek_bookings_for_user(user_id: int, include_statuses: list[TrekBook
         query = query.filter(TrekBooking.status.in_(include_statuses))
     return query.all()
 
+def get_all_trek_bookings_for_staff(staff_id: int, include_statuses: list[TrekBookingStatus] | None = None) -> list[TrekBooking]:
+    query = db.session.query(TrekBooking).join(Trek).filter(Trek.assigned_staff_id == staff_id)
+    if include_statuses:
+        query = query.filter(TrekBooking.status.in_(include_statuses))
+    return query.all()
+
 def search_treks(search_term: str | None = None, difficulty: TrekDifficulty | None = None, sort: str | None = None) -> list[Trek]:
     query = db.session.query(Trek).filter(Trek.status == TrekStatus.APPROVED)
 

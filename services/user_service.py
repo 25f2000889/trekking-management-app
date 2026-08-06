@@ -8,6 +8,12 @@ from werkzeug.security import generate_password_hash
 
 from typing import Literal
 
+def get_all_users() -> list[User]:
+    return db.session.query(User).all()
+
+def get_user_by_id(user_id: int) -> User | None:
+    return db.session.get(User, user_id)
+
 def get_user_by_role(role: UserRole) -> list[User]:
     return db.session.query(User).filter_by(role=role).all()
 

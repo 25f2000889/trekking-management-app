@@ -1,4 +1,5 @@
 from flask import Flask, session
+from flask_jwt_extended import JWTManager
 from enums import UserRole, UserStatus, TrekDifficulty, TrekStatus, TrekBookingStatus
 from config import Config
 from db import db
@@ -10,6 +11,11 @@ from routes.web.staff import staff_bp
 from routes.web.shared import shared_bp
 from routes.web.trekker import trekker_bp
 
+from routes.api.auth import api_auth_bp
+from routes.api.bookings import api_bookings_bp
+from routes.api.treks import api_treks_bp
+from routes.api.users import api_users_bp
+
 
 def create_app():
     app = Flask(__name__)
@@ -17,6 +23,7 @@ def create_app():
     app.config.from_object(Config)
 
     db.init_app(app)
+    jwt = JWTManager(app)
 
     @app.context_processor
     def inject_current_user_and_enums():
@@ -39,6 +46,11 @@ def create_app():
     app.register_blueprint(staff_bp)
     app.register_blueprint(trekker_bp)
     app.register_blueprint(shared_bp)
+
+    app.register_blueprint(api_auth_bp)
+    app.register_blueprint(api_treks_bp)
+    app.register_blueprint(api_users_bp)
+    app.register_blueprint(api_bookings_bp)
 
     with app.app_context():
         db.create_all()
