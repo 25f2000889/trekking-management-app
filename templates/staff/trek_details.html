@@ -3,8 +3,8 @@
 {% block title %}Manage Trek{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="mb-3">{{ trek.name }}</h1>
+<div class="container-fluid">
+    <div class="page-heading"><div><h1>{{ trek.name }}</h1><p>View and manage this trek</p></div></div>
     {% include "components/shared/alerts.html" %}
     <div class="card mb-3">
         <div class="card-body">

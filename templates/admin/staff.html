@@ -5,7 +5,14 @@
 {% block content %}
 <div class="container-fluid">
     <div class="mb-3">
-        <h1 class="mb-3">Staff Management</h1>
+        <div class="page-heading">
+            <div class="col-12 col-md-6">
+                <div>
+                    <h1>Staff Management</h1>
+                    <p>Review and manage staff members and their pending requests.</p>
+                </div>
+            </div>
+        </div>
         <form class="filter-toolbar d-flex mb-3" method="GET" action="{{ url_for('admin.staff') }}" novalidate>
             <input class="form-control me-2" type="search" placeholder="Search by name or email" aria-label="Search"
                 name="search" value="{{ _form.get('search', '') }}">
