@@ -18,14 +18,14 @@ def dashboard():
         len([booking for booking in trek.trek_bookings if booking.status == TrekBookingStatus.BOOKED])
         for trek in assigned_treks
     )
-    open_treks = len([trek for trek in assigned_treks if trek.status == TrekStatus.APPROVED])
+    started_treks = len([trek for trek in assigned_treks if trek.status == TrekStatus.STARTED])
 
     return render_template(
         "staff/dashboard.html",
         tab="dashboard",
         assigned_treks_count=len(assigned_treks),
         total_participants=total_participants,
-        open_treks=open_treks,
+        started_treks=started_treks,
         recent_assigned_treks=sorted(assigned_treks, key=lambda trek: trek.created_at, reverse=True)[:3],
     )
 
