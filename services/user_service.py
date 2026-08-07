@@ -16,8 +16,11 @@ def get_user_by_id(user_id: int, include_statuses: list[UserStatus] | None = Non
         return db.session.query(User).filter_by(id=user_id).filter(User.status.in_(include_statuses)).first()
     return db.session.get(User, user_id)
 
-def get_user_by_role(role: UserRole) -> list[User]:
-    return db.session.query(User).filter_by(role=role).all()
+def get_user_by_role(role: UserRole, include_statuses: list[UserStatus] | None = None) -> list[User]:
+    query = db.session.query(User).filter_by(role=role)
+    if include_statuses is not None:
+        query = query.filter(User.status.in_(include_statuses))
+    return query.all()
 
 def get_active_user_by_id(user_id: int) -> User | None:
     return db.session.query(User).filter_by(id=user_id, status=UserStatus.ACTIVE).first()

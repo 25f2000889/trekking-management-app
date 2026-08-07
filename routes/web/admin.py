@@ -109,7 +109,7 @@ def add_trek():
     form = session.pop("form", {})
     errors = session.pop("errors", {})
 
-    staff_list = UserService.get_user_by_role(UserRole.STAFF)
+    staff_list = UserService.get_user_by_role(UserRole.STAFF, include_statuses=[UserStatus.ACTIVE])
 
     return render_template("admin/add_edit_trek.html", tab="treks", _form=form, _errors=errors, staff_list=staff_list)
 
@@ -165,7 +165,7 @@ def edit_trek(trek_id: int):
     form = convert_enum_to_name_in_dict(session.pop("form", trek.__dict__))
     errors = session.pop("errors", {})
 
-    staff_list = UserService.get_user_by_role(UserRole.STAFF)
+    staff_list = UserService.get_user_by_role(UserRole.STAFF, include_statuses=[UserStatus.ACTIVE])
     
     return render_template("admin/add_edit_trek.html", tab="treks", trek_id=trek_id, _form=form, _errors=errors, staff_list=staff_list)
 
