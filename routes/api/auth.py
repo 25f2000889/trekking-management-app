@@ -38,7 +38,6 @@ def api_register():
         password = require(data, "password", "Password")
         first_name = require(data, "first_name", "First name")
         last_name = require(data, "last_name", "Last name")
-        role = require_enum(data, "role", "Role", UserRole)
     except ValidationError as ve:
         return jsonify({"error": ve.message}), 400
 
@@ -47,7 +46,7 @@ def api_register():
         last_name=last_name,
         email=email,
         password=password,
-        role=role
+        role=UserRole.TREKKER
     )
     if isinstance(user, Exception):
         return jsonify({"error": str(user)}), 400
