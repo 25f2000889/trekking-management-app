@@ -18,7 +18,7 @@ def api_login():
 
     user = AuthService.login(email, password)
     if user:
-        token = create_access_token(identity=user.id, additional_claims={"role": user.role.name, "status": user.status.name})
+        token = create_access_token(identity=str(user.id), additional_claims={"role": user.role.name, "status": user.status.name})
         return jsonify({
             "message": "Login successful",
             "user_id": user.id,
@@ -52,7 +52,7 @@ def api_register():
     if isinstance(user, Exception):
         return jsonify({"error": str(user)}), 400
     
-    token = create_access_token(identity=user.id, additional_claims={"role": user.role.name, "status": user.status.name})
+    token = create_access_token(identity=str(user.id), additional_claims={"role": user.role.name, "status": user.status.name})
     return jsonify({
         "message": "Registration successful",
         "user_id": user.id,

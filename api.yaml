@@ -1,0 +1,722 @@
+openapi: 3.2.0
+info:
+  title: Trekking Management API
+  version: 1.0.0
+  description: API for authentication, trek administration, bookings, and user management.
+servers:
+  - url: http://127.0.0.1:5000
+    description: Local Flask server
+tags:
+  - name: Authentication
+  - name: Treks
+  - name: Bookings
+  - name: Users
+paths:
+  /api/auth/login:
+    post:
+      tags: [Authentication]
+      operationId: login
+      summary: Authenticate a user and issue a JWT access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/auth/register:
+    post:
+      tags: [Authentication]
+      operationId: register
+      summary: Register a user and issue a JWT access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/treks/:
+    get:
+      tags: [Treks]
+      operationId: listTreks
+      summary: List treks visible to the current user
+      description: Anonymous users may search published treks. Admins receive all treks, while staff receive their assigned treks.
+      security:
+        - {}
+        - bearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          description: Search term used for anonymous and trekker searches.
+          schema:
+            type: string
+        - name: difficulty
+          in: query
+          description: Trek difficulty filter for anonymous and trekker searches.
+          schema:
+            $ref: '#/components/schemas/TrekDifficulty'
+        - name: sort
+          in: query
+          description: Sort value used for anonymous and trekker searches.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Treks returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trek'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [Treks]
+      operationId: createTrek
+      summary: Create a trek
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrekWriteRequest'
+      responses:
+        '201':
+          description: Trek created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trek'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/treks/{trek_id}:
+    parameters:
+      - $ref: '#/components/parameters/TrekId'
+    put:
+      tags: [Treks]
+      operationId: updateTrek
+      summary: Replace a trek
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrekWriteRequest'
+      responses:
+        '200':
+          description: Trek updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trek'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/TrekNotFound'
+    delete:
+      tags: [Treks]
+      operationId: deleteTrek
+      summary: Delete a trek
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Trek deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/TrekNotFound'
+  /api/bookings/:
+    get:
+      tags: [Bookings]
+      operationId: listBookings
+      summary: List bookings visible to the current user
+      description: Admins receive all bookings, staff receive bookings for their assigned treks, and trekkers receive their own bookings.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Bookings returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [Bookings]
+      operationId: createBooking
+      summary: Book a trek for the current trekker
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCreateRequest'
+      responses:
+        '201':
+          description: Booking created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Booking could not be found after creation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/bookings/{booking_id}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/BookingId'
+    post:
+      tags: [Bookings]
+      operationId: cancelBooking
+      summary: Cancel a booking
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Booking cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/BookingNotFound'
+  /api/bookings/{booking_id}/restore:
+    parameters:
+      - $ref: '#/components/parameters/BookingId'
+    post:
+      tags: [Bookings]
+      operationId: restoreBooking
+      summary: Restore a cancelled booking
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Booking restored successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/BookingNotFound'
+  /api/users/:
+    get:
+      tags: [Users]
+      operationId: listUsers
+      summary: List all users
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Users returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/users/{user_id}:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    put:
+      tags: [Users]
+      operationId: updateOwnProfile
+      summary: Update the authenticated user's profile
+      description: The path ID must match the authenticated user. Staff may additionally update staff profile fields.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileUpdateRequest'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/users/staff/{user_id}/approve:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    post:
+      tags: [Users]
+      operationId: approveStaff
+      summary: Approve a pending staff account
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Staff account approved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/UserNotFound'
+  /api/users/staff/{user_id}/reject:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    post:
+      tags: [Users]
+      operationId: rejectStaff
+      summary: Reject a pending staff account
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Staff account rejected successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/UserNotFound'
+  /api/users/{user_id}/blacklist:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    post:
+      tags: [Users]
+      operationId: blacklistUser
+      summary: Blacklist a user account
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User blacklisted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/UserNotFound'
+  /api/users/{user_id}/restore:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    post:
+      tags: [Users]
+      operationId: restoreUser
+      summary: Restore a user account
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User restored successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/UserNotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    TrekId:
+      name: trek_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    BookingId:
+      name: booking_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    UserId:
+      name: user_id
+      in: path
+      required: true
+      schema:
+        type: integer
+  responses:
+    BadRequest:
+      description: The request failed validation or could not be completed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: A valid JWT access token is required, or its user is inactive.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The authenticated user does not have the required role or cannot modify this resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    TrekNotFound:
+      description: Trek not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BookingNotFound:
+      description: Trek booking not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UserNotFound:
+      description: User not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+    Message:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    RegisterRequest:
+      type: object
+      required: [email, password, first_name, last_name, role]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        first_name:
+          type: string
+        last_name:
+          type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
+    AuthResponse:
+      type: object
+      required: [message, user_id, user_role, access_token]
+      properties:
+        message:
+          type: string
+        user_id:
+          type: integer
+        user_role:
+          $ref: '#/components/schemas/UserRole'
+        access_token:
+          type: string
+    TrekWriteRequest:
+      type: object
+      required:
+        - name
+        - location
+        - duration_days
+        - difficulty
+        - available_slots
+        - start_date
+        - end_date
+      properties:
+        name:
+          type: string
+        description:
+          type: [string, 'null']
+        location:
+          type: string
+        duration_days:
+          type: integer
+        difficulty:
+          $ref: '#/components/schemas/TrekDifficulty'
+        available_slots:
+          type: integer
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        assigned_staff_id:
+          type: [integer, 'null']
+        status:
+          $ref: '#/components/schemas/TrekStatus'
+    Trek:
+      type: object
+      required:
+        - id
+        - name
+        - location
+        - available_slots
+        - difficulty
+        - duration_days
+        - start_date
+        - end_date
+        - status
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: [string, 'null']
+        location:
+          type: string
+        available_slots:
+          type: integer
+        assigned_staff_id:
+          type: [integer, 'null']
+        difficulty:
+          $ref: '#/components/schemas/TrekDifficulty'
+        duration_days:
+          type: integer
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/TrekStatus'
+    BookingCreateRequest:
+      type: object
+      required: [trek_id]
+      properties:
+        trek_id:
+          type: integer
+    Booking:
+      type: object
+      required: [id, user_id, trek_id, booking_date, status, user, trek]
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        trek_id:
+          type: integer
+        booking_date:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/BookingStatus'
+        user:
+          $ref: '#/components/schemas/BookingUser'
+        trek:
+          $ref: '#/components/schemas/BookingTrek'
+    BookingUser:
+      type: object
+      required: [first_name, last_name, email]
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+    BookingTrek:
+      type: object
+      required: [name, location]
+      properties:
+        name:
+          type: string
+        location:
+          type: string
+    BookingActionResponse:
+      type: object
+      required: [message, booking]
+      properties:
+        message:
+          type: string
+        booking:
+          $ref: '#/components/schemas/Booking'
+    UserProfileUpdateRequest:
+      type: object
+      minProperties: 1
+      additionalProperties: false
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        experience:
+          type: string
+          description: Available only to staff users.
+        phone_number:
+          type: string
+          description: Available only to staff users.
+        address:
+          type: string
+          description: Available only to staff users.
+    User:
+      type: object
+      required: [id, first_name, last_name, email, role, status]
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/UserRole'
+        status:
+          $ref: '#/components/schemas/UserStatus'
+        staff_profile:
+          $ref: '#/components/schemas/StaffProfile'
+    StaffProfile:
+      type: object
+      required: [experience, phone_number, address]
+      properties:
+        experience:
+          type: string
+        phone_number:
+          type: string
+        address:
+          type: string
+    UserActionResponse:
+      type: object
+      required: [message, user]
+      properties:
+        message:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+    UserRole:
+      type: string
+      enum: [ADMIN, STAFF, TREKKER]
+    UserStatus:
+      type: string
+      enum: [ACTIVE, PENDING, REJECTED, BLACKLISTED]
+    TrekDifficulty:
+      type: string
+      enum: [EASY, MODERATE, HARD]
+    TrekStatus:
+      type: string
+      enum: [PENDING, APPROVED, CANCELLED, STARTED, COMPLETED]
+    BookingStatus:
+      type: string
+      enum: [BOOKED, CANCELLED]
