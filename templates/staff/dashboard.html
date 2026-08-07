@@ -7,6 +7,14 @@
     <div class="alert alert-warning" role="alert">
         Your account is pending approval. Please wait for the administrator to approve your account before you can access the staff dashboard.
     </div>
+{% elif current_user.status == enums.UserStatus.REJECTED %}
+    <div class="alert alert-danger" role="alert">
+        Your request has been rejected. Please update your profile information <a href="{{ url_for('shared.profile') }}" class="alert-link">here</a> and resubmit your request for approval by clicking the button below.
+
+        <form action="{{ url_for('staff.resubmit_request') }}" method="post" class="mt-3">
+            <button type="submit" class="btn btn-primary">Resubmit Request</button>
+        </form>
+    </div>
 {% else %}
 <div class="container-fluid">
     <div class="page-heading"><div><h1>Staff Dashboard</h1><p>Overview of your assigned trekking operations.</p></div></div>

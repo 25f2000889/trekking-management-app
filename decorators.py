@@ -1,5 +1,6 @@
 from flask import flash, redirect, session, url_for, g
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from enums import UserStatus
 from services import UserService
 from functools import wraps
 
@@ -19,7 +20,7 @@ def auth_required(view):
         if "user_id" not in session:
             return redirect(url_for("auth.login"))
 
-        user = UserService.get_active_user_by_id(session["user_id"])
+        user = UserService.get_user_by_id(session["user_id"], include_statuses=[UserStatus.ACTIVE, UserStatus.PENDING, UserStatus.REJECTED])
         if not user:
             session.clear()
             flash("Your account is blacklisted or does not exist.", "danger")

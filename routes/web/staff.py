@@ -1,7 +1,8 @@
 from flask import Blueprint, redirect, render_template, request, url_for, session, flash
 from decorators import auth_required, roles_required
+from enums import UserStatus
 from enums import TrekBookingStatus, TrekStatus
-from services import TrekService
+from services import TrekService, UserService
 from validation import ValidationError, require_int
 
 staff_bp = Blueprint("staff", __name__, url_prefix="/staff")
@@ -28,6 +29,19 @@ def dashboard():
         started_treks=started_treks,
         recent_assigned_treks=sorted(assigned_treks, key=lambda trek: trek.created_at, reverse=True)[:3],
     )
+
+@staff_bp.post("/resubmit-request")
+@auth_required
+@roles_required("STAFF")
+def resubmit_request():
+    result = UserService.update_user(session["user_id"], status=UserStatus.PENDING)
+
+    if isinstance(result, Exception):
+        flash("Database error: " + str(result), "danger")
+        return redirect(url_for("staff.dashboard"))
+
+    flash("Your request has been resubmitted for approval.", "success")
+    return redirect(url_for("staff.dashboard"))
 
 @staff_bp.get("/treks")
 @auth_required

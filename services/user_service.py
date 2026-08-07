@@ -11,7 +11,9 @@ from typing import Literal
 def get_all_users() -> list[User]:
     return db.session.query(User).all()
 
-def get_user_by_id(user_id: int) -> User | None:
+def get_user_by_id(user_id: int, include_statuses: list[UserStatus] | None = None) -> User | None:
+    if include_statuses is not None:
+        return db.session.query(User).filter_by(id=user_id).filter(User.status.in_(include_statuses)).first()
     return db.session.get(User, user_id)
 
 def get_user_by_role(role: UserRole) -> list[User]:
