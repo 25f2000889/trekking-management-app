@@ -1,6 +1,6 @@
 from flask import Blueprint, redirect, render_template, request, url_for, session, flash
 from decorators import auth_required
-from validation import ValidationError, require
+from validation import ValidationError, optional, require
 from services import UserService
 
 shared_bp = Blueprint("shared", __name__, url_prefix="/")
@@ -23,6 +23,14 @@ def profile():
             session["errors"] = {e.field: e.message}
             return redirect(url_for("shared.profile"))
 
+        user_data = {
+            "first_name": firstName,
+            "last_name": lastName,
+        }
+        password = optional(form, "password")
+        if password:
+            user_data["password"] = password
+
         if session.get('user_role', '').lower() == 'staff':
             try:
                 experience = require(form, "experience", "Experience")
@@ -35,14 +43,13 @@ def profile():
 
             result = UserService.update_user_with_staff_profile(
                 user_id=session['user_id'],
-                first_name=firstName,
-                last_name=lastName,
                 experience=experience,
                 phone_number=phoneNumber,
-                address=address
+                address=address,
+                **user_data,
             )
         else:
-            result = UserService.update_user(user_id=session['user_id'], first_name=firstName, last_name=lastName)
+            result = UserService.update_user(user_id=session['user_id'], **user_data)
         
         if result is True:
             flash("Profile updated successfully", "success")

@@ -297,7 +297,7 @@ paths:
       tags: [Users]
       operationId: updateOwnProfile
       summary: Update the authenticated user's profile
-      description: The path ID must match the authenticated user. Staff may additionally update staff profile fields.
+      description: The path ID must match the authenticated user. Staff may additionally update staff profile fields. A non-empty password changes the authenticated user's password.
       security:
         - bearerAuth: []
       requestBody:
@@ -659,6 +659,10 @@ components:
           type: string
         last_name:
           type: string
+        password:
+          type: string
+          format: password
+          description: Optional new password. Empty values do not change the password.
         experience:
           type: string
           description: Available only to staff users.

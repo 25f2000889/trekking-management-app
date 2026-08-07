@@ -8,7 +8,7 @@ from validation import ValidationError, require
 api_users_bp = Blueprint("api_users", __name__, url_prefix="/api/users")
 
 STAFF_PROFILE_FIELDS = {"experience", "phone_number", "address"}
-USER_PROFILE_FIELDS = {"first_name", "last_name"}
+USER_PROFILE_FIELDS = {"first_name", "last_name", "password"}
 
 def parse_user_update(data, user):
 	if not isinstance(data, dict):
@@ -18,19 +18,21 @@ def parse_user_update(data, user):
 	if unexpected_fields:
 		raise ValidationError(None, f"Unsupported fields: {', '.join(sorted(unexpected_fields))}")
 
-	if not data:
-		raise ValidationError(None, "At least one profile field is required")
-
 	staff_profile_data = STAFF_PROFILE_FIELDS.intersection(data)
 	if staff_profile_data and user.role != UserRole.STAFF:
 		raise ValidationError(None, "Staff profile fields can only be updated by staff members")
 	if staff_profile_data and not user.staff_profile:
 		raise ValidationError(None, "Staff profile not found")
 
-	return {
+	user_data = {
 		field: require(data, field, field.replace("_", " ").title())
 		for field in data
+		if field != "password" or data[field]
 	}
+	if not user_data:
+		raise ValidationError(None, "At least one non-empty profile field is required")
+
+	return user_data
 
 
 def update_user_status(user_id, status, action):

@@ -93,6 +93,10 @@ def update_user(user_id, **user_data) -> Literal[True] | Exception:
     if not user:
         return Exception("User not found")
 
+    password = user_data.pop("password", None)
+    if password:
+        user_data["password_hash"] = generate_password_hash(password)
+
     for key, value in user_data.items():
         if hasattr(user, key):
             setattr(user, key, value)
@@ -108,6 +112,10 @@ def update_user_with_staff_profile(user_id, **user_data) -> Literal[True] | Exce
     user = db.session.query(User).get(user_id)
     if not user:
         return Exception("User not found")
+
+    password = user_data.pop("password", None)
+    if password:
+        user_data["password_hash"] = generate_password_hash(password)
 
     for key, value in user_data.items():
         if hasattr(user, key):
