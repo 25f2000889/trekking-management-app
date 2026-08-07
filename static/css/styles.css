@@ -37,6 +37,11 @@ body {
     background: var(--trekflow-mist);
 }
 
+.admin-header-search {
+    max-width: 34rem;
+    width: min(100%, 34rem);
+}
+
 .user-avatar {
     align-items: center;
     background: var(--trekflow-forest);
@@ -229,6 +234,11 @@ body {
 }
 
 @media (max-width: 767.98px) {
+    .admin-header-search {
+        margin: 0.75rem 0 !important;
+        max-width: none;
+    }
+
     .app-layout {
         display: block !important;
     }

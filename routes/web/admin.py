@@ -30,6 +30,26 @@ def dashboard():
     )
 
 
+@admin_bp.get("/search")
+@auth_required
+@roles_required("ADMIN")
+def search():
+    query = request.args.get("q", "").strip()
+
+    treks = TrekService.search_treks_by_name_or_location(query) if query else []
+    staff_members = UserService.search_users_by_id_or_name_or_email(query, role=UserRole.STAFF) if query else []
+    trekkers = UserService.search_users_by_id_or_name_or_email(query, role=UserRole.TREKKER) if query else []
+
+    return render_template(
+        "admin/search.html",
+        tab="search",
+        query=query,
+        treks=treks,
+        staff_members=staff_members,
+        trekkers=trekkers,
+    )
+
+
 @admin_bp.get("/treks")
 @auth_required
 @roles_required("ADMIN")

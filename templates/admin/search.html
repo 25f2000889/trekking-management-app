@@ -1,0 +1,62 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Search{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-heading">
+        <div>
+            <h1>Search Results</h1>
+            {% if query %}
+            <p>Results matching "{{ query }}".</p>
+            {% else %}
+            <p>Enter a search term to find treks, staff, and trekkers.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if query %}
+    <section class="mb-4" aria-labelledby="treks-results-heading">
+        <h2 class="h5 mb-3" id="treks-results-heading">Treks ({{ treks|length }})</h2>
+        <div class="table-shell table-responsive"><table class="table table-hover align-middle">
+            <thead><tr><th scope="col">Name</th><th scope="col">Location</th><th scope="col">Duration</th><th scope="col">Difficulty</th></tr></thead>
+            <tbody>
+                {% for trek in treks %}
+                <tr><td><a href="{{ url_for('admin.edit_trek', trek_id=trek.id) }}">{{ trek.name }}</a></td><td>{{ trek.location }}</td><td>{{ trek.duration_days }} days</td><td>{{ trek.difficulty.value }}</td></tr>
+                {% else %}
+                <tr><td class="text-center" colspan="4">No treks found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table></div>
+    </section>
+
+    <section class="mb-4" aria-labelledby="staff-results-heading">
+        <h2 class="h5 mb-3" id="staff-results-heading">Staff ({{ staff_members|length }})</h2>
+        <div class="table-shell table-responsive"><table class="table table-hover align-middle">
+            <thead><tr><th scope="col">ID</th><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Status</th></tr></thead>
+            <tbody>
+                {% for staff_member in staff_members %}
+                <tr><td>{{ staff_member.id }}</td><td>{{ staff_member.first_name }} {{ staff_member.last_name }}</td><td>{{ staff_member.email }}</td><td>{{ staff_member.status.value }}</td></tr>
+                {% else %}
+                <tr><td class="text-center" colspan="4">No staff members found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table></div>
+    </section>
+
+    <section aria-labelledby="trekkers-results-heading">
+        <h2 class="h5 mb-3" id="trekkers-results-heading">Trekkers ({{ trekkers|length }})</h2>
+        <div class="table-shell table-responsive"><table class="table table-hover align-middle">
+            <thead><tr><th scope="col">ID</th><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Status</th></tr></thead>
+            <tbody>
+                {% for trekker in trekkers %}
+                <tr><td>{{ trekker.id }}</td><td>{{ trekker.first_name }} {{ trekker.last_name }}</td><td>{{ trekker.email }}</td><td>{{ trekker.status.value }}</td></tr>
+                {% else %}
+                <tr><td class="text-center" colspan="4">No trekkers found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table></div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

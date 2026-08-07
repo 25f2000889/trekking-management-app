@@ -5,6 +5,15 @@
         </a>
 
         <div class="collapse navbar-collapse" id="navbarContent">
+            {% if current_user.role.name == 'ADMIN' %}
+            <form class="admin-header-search mx-auto" method="GET" action="{{ url_for('admin.search') }}" role="search">
+                <label class="visually-hidden" for="admin-search">Search TrekFlow</label>
+                <div class="input-group">
+                    <input class="form-control" id="admin-search" name="q" type="search" value="{{ request.args.get('q', '') if request.endpoint == 'admin.search' else '' }}" placeholder="Search treks, staff, trekkers" required>
+                    <button class="btn btn-outline-primary" type="submit" aria-label="Search"><i class="bi bi-search"></i></button>
+                </div>
+            </form>
+            {% endif %}
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                     <a class="nav-link app-user-link d-flex align-items-center gap-2" href="{{ url_for('shared.profile') }}">
